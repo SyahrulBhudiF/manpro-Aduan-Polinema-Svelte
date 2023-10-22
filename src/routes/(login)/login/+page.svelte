@@ -1,24 +1,28 @@
 <script lang="ts">
 	import logoPolinema from '$lib/Assets/logo-polinema.png';
+	import { navigate } from '../../../../node_modules/svelte-routing';
+	let hasLogin = false;
 
-	const specialChars = /[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/i;
 	const numberChars = /[A-Za-z]/i;
 
 	let nim: string = '';
 
-	console.log(numberChars.test(nim));
-
 	let password: string = '';
-	let containRegexPassword = specialChars.test(password);
-	$: inputsHasValue =
-		(nim !== '' && numberChars.test(nim)) || (password !== '' && !containRegexPassword);
+	$: inputsHasValue = numberChars.test(nim) || !(nim.length === 10);
+
+	function handleLogin() {
+		hasLogin = true;
+	}
+
+	$: hasLogin ? navigate('/home') : '';
 </script>
 
 <div class="frame bg-white h-fit">
 	<img src={logoPolinema} alt="logo-polinema" class="logos" />
 	<h1 class="text-3xl font-JKTSans">Selamat Datang di Aduan!</h1>
 
-	<form class="frame-input" method="post">
+	<form class="frame-input" method="">
+		<!-- method harusnya post tapi karena tidak ada database maka dikosongkan -->
 		<div class="nim-input">
 			<label for="nim">NIM</label>
 			<input type="text" id="nim" name="nim" required class="text-lg" bind:value={nim} />
@@ -35,9 +39,9 @@
 			/>
 		</div>
 		<button
-			type="submit"
 			class="submit-login disabled:bg-slate-400 bg-[#048F7B]"
 			disabled={inputsHasValue}
+			on:click={handleLogin}
 		>
 			<span class="submit-login-text">Masuk</span>
 		</button>

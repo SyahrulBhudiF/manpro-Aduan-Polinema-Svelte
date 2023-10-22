@@ -1,13 +1,8 @@
 <script lang="ts">
-	let hasLogin = true;
-</script>
+	import { navigate } from '../../node_modules/svelte-routing';
+	import { onMount } from 'svelte';
 
-<div class="container">
-	{#if hasLogin}
-		<h1 class="text-red-500">Welcome to SvelteKit</h1>
-		<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-	{:else}
-		<h1>Welcome to SvelteKit</h1>
-		<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-	{/if}
-</div>
+	onMount(() => {
+		navigate('/login');
+	});
+</script>
