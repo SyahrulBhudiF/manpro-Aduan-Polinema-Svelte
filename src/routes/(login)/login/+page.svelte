@@ -53,6 +53,8 @@
 		padding: 3.75rem;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
+		margin-top: 5rem;
 		gap: 2rem;
 
 		border-radius: 1.25rem;
