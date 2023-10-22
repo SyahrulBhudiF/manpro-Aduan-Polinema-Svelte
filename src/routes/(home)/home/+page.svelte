@@ -4,6 +4,7 @@
 	import ec2 from '$lib/Assets/Ellipse-5.svg';
 	import search from '$lib/Assets/search-normal.svg';
 	import x from '$lib/Assets/Frame.svg';
+	import Card from '../../components/card.svelte';
 	import { users } from './data';
 
 	let laporanItems = ['Semua', 'UKT', 'Fasilitas', 'Kebijakan Akademik'];
@@ -174,68 +175,22 @@
 			<div class="grid grid-cols-3 gap-4">
 				{#each users as user}
 					{#if activeIndex === user.index}
-						<div class="card">
-							<div class="flex">
-								<img src={user.profile} alt="profile" class="p-2 bg-[#F5F5F5] rounded-full" />
-								<div class="flex flex-col">
-									<p class="text-sm text-[#121212] font-semibold">{user.name}</p>
-									<p class="text-xs text-black text-opacity-40 font-normal">{user.date}</p>
-								</div>
-							</div>
-
-							<span class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
-								>{user.category}</span
-							>
-
-							<p class="text-black text-opacity-70 text-justify">{user.text}</p>
-							<hr />
-
-							<button
-								class="text-[#048F7B] font-semibold text-xs text-right cursor-pointer"
-								on:click={openModal}
-								on:keydown={openModal}
-								tabindex="0">Lihat Respon</button
-							>
-						</div>
+						<Card {user} {openModal} />
 						{#if isModalOpen}
 							<div
 								class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20"
 							>
 								<div class="flex flex-col bg-white p-4 w-[40%] rounded-xl">
-                                    <div class="flex justify-between">
-                                        <p class="text-[#121212] text-xl font-semibold">Detail Laporan</p>
-                                        <button class="btn" on:click={closeModal}><img src={x} alt="close"></button>
-                                    </div>
-                                    <div class="flex flex-col p-6 gap-5">
-                                        
-                                    </div>
+									<div class="flex justify-between">
+										<p class="text-[#121212] text-xl font-semibold">Detail Laporan</p>
+										<button class="btn" on:click={closeModal}><img src={x} alt="close" /></button>
+									</div>
+									<div class="flex flex-col p-6 gap-5" />
 								</div>
 							</div>
 						{/if}
 					{:else if activeIndex === user.all}
-						<div class="card">
-							<div class="flex">
-								<img src={user.profile} alt="profile" class="p-2 bg-[#F5F5F5] rounded-full" />
-								<div class="flex flex-col">
-									<p class="text-sm text-[#121212] font-semibold">{user.name}</p>
-									<p class="text-xs text-black text-opacity-40 font-normal">{user.date}</p>
-								</div>
-							</div>
-
-							<span class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
-								>{user.category}</span
-							>
-
-							<p class="text-black text-opacity-70 text-justify">{user.text}</p>
-							<hr />
-
-							<button
-								class="text-[#048F7B] font-semibold text-xs text-right cursor-pointer"
-								on:click={openModal}
-								on:keydown={openModal}
-								tabindex="0">Lihat Respon</button
-							>
-						</div>
+						<Card {user} {openModal} />
 						{#if isModalOpen}
 							<div
 								class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20"
@@ -306,7 +261,7 @@
 		color: white;
 	}
 
-	.card {
+	/* .card {
 		display: flex;
 		flex-direction: column;
 		padding: 1.5rem;
@@ -315,5 +270,5 @@
 		border: 1px solid #ededed;
 		width: fit-content;
 		height: fit-content;
-	}
+	} */
 </style>
