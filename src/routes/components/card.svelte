@@ -1,5 +1,12 @@
 <script lang="ts">
-	export let user: object;
+	export let user: {
+		id: number;
+		profile: string;
+		name: string;
+		date: string;
+		category: string;
+		text: string;
+	};
 	export let openModal: any;
 </script>
 
@@ -21,8 +28,8 @@
 
 	<button
 		class="text-[#048F7B] font-semibold text-xs text-right cursor-pointer"
-		on:click={openModal}
-		on:keydown={openModal}
+		on:click={openModal(user.id)}
+		on:keydown={openModal(user.id)}
 		tabindex="0">Lihat Respon</button
 	>
 </div>
