@@ -5,8 +5,8 @@
 	import search from '$lib/Assets/search-normal.svg';
 	import x from '$lib/Assets/Frame.svg';
 	import admin from '$lib/Assets/logo-polinema.png';
-	import Card from '../../components/card.svelte';
-	import { users } from './data';
+	import Card from '$lib/Components/card.svelte';
+	// import { users } from './data';
 
 	let laporanItems = ['Semua', 'UKT', 'Fasilitas', 'Kebijakan Akademik'];
 	let isBerandaClicked: boolean = true;
@@ -176,7 +176,7 @@
 				</div>
 			</div>
 			<div class="grid grid-cols-3 gap-4">
-				{#each users as user}
+				<!-- {#each users as user}
 					{#if activeIndex === user.index}
 						<Card {user} {openModal} />
 					{:else if activeIndex === user.all}
@@ -228,7 +228,7 @@
 							</div>
 						</div>
 					{/if}
-				{/each}
+				{/each} -->
 			</div>
 		</section>
 	{:else if isLaporanClicked}
