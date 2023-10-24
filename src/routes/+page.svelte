@@ -208,6 +208,7 @@
 									date={new Date(created_at * 1000).toLocaleDateString()}
 									category={kategori}
 									text={pesan}
+									urgentState={Number.parseInt(urgensi)}
 									{openModal}
 								/>
 							{:else if laporanItems[activeIndex] === kategori}
@@ -218,6 +219,7 @@
 									date={new Date(created_at * 1000).toLocaleDateString()}
 									category={kategori}
 									text={pesan}
+									urgentState={Number.parseInt(urgensi)}
 									{openModal}
 								/>
 							{/if}
@@ -285,7 +287,143 @@
 					</div>
 				</section>
 			{:else if isLaporanClicked}
-				<div class="input w-full flex justify-between" />
+				<!-- <div class="input w-full flex justify-between" /> -->
+				<section class="input w-full flex justify-between">
+					<img src={ec1} alt="ec" />
+					<div class="flex flex-col text-center align-middle justify-center gap-3 w-[17%]">
+						<p class="text-[1.75rem] font-semibold text-white">Ingin ajukan pelaporan?</p>
+						<p class="text-sm text-[#FFFFFF99]">
+							Pastikan Anda mengajukan pelaporan dengan fakta dan norma yang sesuai, ya.
+						</p>
+						<div class="mt-5">
+							<span
+								role="button"
+								tabindex="0"
+								class="bg-[#048f7b] px-6 py-3 w-fit text-white rounded-md active:opacity-80"
+								on:click={handleLaporanClick}
+								on:keydown={handleLaporanClick}
+							>
+								Buat Laporan</span
+							>
+						</div>
+					</div>
+					<img src={ec2} alt="ec" />
+				</section>
+
+				<section class="mainContent">
+					<p class="text-[#121212] text-xl font-semibold">Laporan yang anda ajukan</p>
+					<div class="flex justify-between">
+						<ul class="flex gap-4">
+							{#each laporanItems as item, index}
+								<li>
+									<button
+										class="navLi {activeIndex === index ? 'selected' : ''}"
+										on:click={() => handleClickLi(index)}
+									>
+										{item}
+									</button>
+								</li>
+							{/each}
+						</ul>
+						<div class="flex navLi gap-2">
+							<input
+								type="search"
+								name="search"
+								id="search"
+								placeholder="Cari berdasarkan kata"
+								class="outline-none"
+							/>
+							<img src={search} alt="search" />
+						</div>
+					</div>
+					<div class="grid grid-cols-3 gap-4">
+						{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin }, index}
+							{#if activeIndex === index && nama === data.user.username}
+								<Card
+									id={id_laporan}
+									profile={questionPict}
+									name={nama}
+									date={new Date(created_at * 1000).toLocaleDateString()}
+									category={kategori}
+									text={pesan}
+									urgentState={Number.parseInt(urgensi)}
+									{openModal}
+								/>
+							{:else if laporanItems[activeIndex] === kategori && nama === data.user.username}
+								<Card
+									id={id_laporan}
+									profile={questionPict}
+									name={nama}
+									date={new Date(created_at * 1000).toLocaleDateString()}
+									category={kategori}
+									text={pesan}
+									urgentState={Number.parseInt(urgensi)}
+									{openModal}
+								/>
+							{/if}
+							{#if isModalOpen && selectedUserId === id_laporan}
+								<div class="opacity-0">
+									{setTimeout(() => {
+										document.getElementById('modal-detail')?.classList.toggle('scale-0');
+										document.getElementById('modal-detail')?.classList.toggle('scale-100');
+									}, 1)}
+								</div>
+								<div class="card-modal">
+									<div
+										class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center scale-0"
+										id="modal-detail"
+									>
+										<div class="flex justify-between mx-5 mb-4">
+											<p class="text-[#121212] text-xl font-semibold">Detail Laporan</p>
+
+											<button class="btn" on:click={closeModal}><img src={x} alt="close" /></button>
+										</div>
+
+										<div class="flex flex-col p-6 gap-5">
+											<div class="flex">
+												<img
+													src={questionPict}
+													alt="profile"
+													class="p-2 bg-[#F5F5F5] rounded-full"
+												/>
+
+												<div class="flex flex-col">
+													<p class="text-sm text-[#121212] font-semibold">{nama}</p>
+													<p class="text-xs text-black text-opacity-40 font-normal">
+														{new Date(created_at * 1000).toLocaleDateString()}
+													</p>
+												</div>
+											</div>
+											<hr />
+
+											<span
+												class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
+												>{kategori}</span
+											>
+
+											<p class="text-black text-opacity-70 text-justify">{pesan}</p>
+										</div>
+
+										<p class="text-[#121212] text-xl font-semibold mx-5 mb-5">Respon</p>
+
+										<div class="flex gap-4 align-baseline mx-6 mb-4">
+											<img src={admin} alt="admin.png" class="w-9" />
+											<!-- {console.log(namaAdmin)} -->
+											<div class="flex flex-col">
+												<span class="text-[#121212] font-[600] text-sm">{namaAdmin}</span>
+												<span class="font-medium text-xs text-black text-opacity-40"
+													>{new Date(answered_at * 1000).toLocaleDateString()}</span
+												>
+											</div>
+										</div>
+
+										<p class="text-black text-opacity-70 text-justify mx-6">{jawaban}</p>
+									</div>
+								</div>
+							{/if}
+						{/each}
+					</div>
+				</section>
 			{/if}
 		</section>
 	</div>
