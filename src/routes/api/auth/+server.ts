@@ -8,15 +8,11 @@ import jwt from 'jsonwebtoken';
 export const POST = async ({ request, locals }) => {
 	const body = await request.json();
 
-	const token = jwt.sign({ userName: 'Udin', nim: body.nim }, JWT_TOKEN_SERIALIZER, {
-		expiresIn: '1d'
-	});
-
 	const connection = await connect();
 	const pool = connection.request();
 	const result = await pool.query(`SELECT * FROM dbo.mahasiswa WHERE nim = '${body?.nim}'`);
 
-	console.log(result);
+	console.log(result.recordset[0].nama);
 
 	if (result.recordset.length < 1)
 		return json({ isErr: true, errMessage: 'NIM Not found', token: null });
@@ -25,6 +21,14 @@ export const POST = async ({ request, locals }) => {
 
 	if (!passwordMatch)
 		return json({ isErr: true, errMessage: 'Password are Incorrect', token: null });
+
+	const token = jwt.sign(
+		{ userName: result.recordset[0].nama, nim: result.recordset[0].nim },
+		JWT_TOKEN_SERIALIZER,
+		{
+			expiresIn: '1d'
+		}
+	);
 
 	locals.user = {
 		id: '224',
