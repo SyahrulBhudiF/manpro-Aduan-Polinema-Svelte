@@ -199,7 +199,7 @@
 						</div>
 					</div>
 					<div class="grid grid-cols-3 gap-4">
-						{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at }, index}
+						{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin }, index}
 							{#if activeIndex === index}
 								<Card
 									id={id_laporan}
@@ -222,9 +222,16 @@
 								/>
 							{/if}
 							{#if isModalOpen && selectedUserId === id_laporan}
+								<div class="opacity-0">
+									{setTimeout(() => {
+										document.getElementById('modal-detail')?.classList.toggle('scale-0');
+										document.getElementById('modal-detail')?.classList.toggle('scale-100');
+									}, 1)}
+								</div>
 								<div class="card-modal">
 									<div
-										class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl"
+										class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center scale-0"
+										id="modal-detail"
 									>
 										<div class="flex justify-between mx-5 mb-4">
 											<p class="text-[#121212] text-xl font-semibold">Detail Laporan</p>
@@ -241,10 +248,13 @@
 												/>
 
 												<div class="flex flex-col">
-													<p class="text-sm text-[#121212] font-semibold">{name}</p>
-													<p class="text-xs text-black text-opacity-40 font-normal">{created_at}</p>
+													<p class="text-sm text-[#121212] font-semibold">{nama}</p>
+													<p class="text-xs text-black text-opacity-40 font-normal">
+														{new Date(created_at * 1000).toLocaleDateString()}
+													</p>
 												</div>
 											</div>
+											<hr />
 
 											<span
 												class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
@@ -258,11 +268,11 @@
 
 										<div class="flex gap-4 align-baseline mx-6 mb-4">
 											<img src={admin} alt="admin.png" class="w-9" />
-
+											<!-- {console.log(namaAdmin)} -->
 											<div class="flex flex-col">
-												<span class="text-[#121212] font-[600] text-sm">Admin Polinema</span>
+												<span class="text-[#121212] font-[600] text-sm">{namaAdmin}</span>
 												<span class="font-medium text-xs text-black text-opacity-40"
-													>{answered_at}</span
+													>{new Date(answered_at * 1000).toLocaleDateString()}</span
 												>
 											</div>
 										</div>
