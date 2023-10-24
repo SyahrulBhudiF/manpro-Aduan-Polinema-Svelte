@@ -13,6 +13,8 @@ export const actions = {
 		if (nim == null) return { isErr: true, errContnet: 'NIM should not empty' };
 		if (password == null) return { isErr: true, errContnet: 'Password should not empty' };
 
+		console.log(nim, password);
+
 		const response = await fetch('/api/auth', {
 			method: 'POST',
 			body: JSON.stringify({

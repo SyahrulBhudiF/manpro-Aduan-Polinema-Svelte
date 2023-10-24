@@ -1,11 +1,11 @@
-import { DBNAME, DBPASSWORD, DBUSER } from '$env/static/private';
+import { DBNAME, DBPASSWORD, DBSERVER, DBUSER } from '$env/static/private';
 import mssql from 'mssql';
 
 const sqlConfig = {
 	user: DBUSER,
 	password: DBPASSWORD,
 	database: DBNAME,
-	server: 'localhost',
+	server: DBSERVER,
 	pool: {
 		max: 10,
 		min: 0,
@@ -18,5 +18,10 @@ const sqlConfig = {
 };
 
 export const connect = async (): Promise<mssql.ConnectionPool> => {
-	return await mssql.connect(sqlConfig);
+	try {
+		return await mssql.connect(sqlConfig);
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
 };
