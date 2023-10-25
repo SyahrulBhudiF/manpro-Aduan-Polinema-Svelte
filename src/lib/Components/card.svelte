@@ -12,12 +12,16 @@
 	export let openModal: any;
 </script>
 
-<div class="card">
+<div class="card col-span-1 h-full w-full">
 	<div class="flex">
 		<img src={profile} alt="profile" class="p-2 bg-[#F5F5F5] rounded-full" />
 		<div class="flex flex-col">
 			<p class="text-sm text-[#121212] font-semibold">
-				{name}
+				{name.length > 4
+					? name.charAt(0) + '*'.repeat(name.length - 2) + name.substring(name.length - 1)
+					: name.length == 1
+					? name
+					: name.charAt(0) + '*'}
 			</p>
 			<p class="text-xs text-black text-opacity-40 font-normal">{date}</p>
 		</div>
@@ -66,7 +70,12 @@
 		>{category}</span
 	>
 
-	<p class="text-black text-opacity-70 text-justify">{text}</p>
+	<p class="text-black text-opacity-70 text-justify h-full w-full">
+		{#each text.split(' ') as value, index}
+			{index >= 41 ? '' : value + ' '}
+		{/each}
+		{text.split(' ').length >= 41 ? '...' : ''}
+	</p>
 	<hr />
 
 	<button
@@ -85,7 +94,5 @@
 		gap: 1.25rem;
 		border-radius: 1rem;
 		border: 1px solid #ededed;
-		width: fit-content;
-		height: fit-content;
 	}
 </style>
