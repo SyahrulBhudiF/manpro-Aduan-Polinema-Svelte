@@ -4,13 +4,28 @@ export const load = async ({ locals, fetch }) => {
 	if (locals.user == null) throw redirect(301, '/login');
 	if (locals.user.nim == null) throw redirect(301, '/login');
 
-	const response = await fetch('/api/branda', { method: 'GET' });
-	const jsonResult = await response.json();
+	const responseReports = await fetch('/api/branda', { method: 'GET' });
+	const jsonReports = await responseReports.json();
 
-	if (jsonResult?.isErr) {
-		throw jsonResult.errMessage;
-	}
+	const responseZone = await fetch('/api/branda/zona', { method: 'GET' });
+	const jsonZone = await responseZone.json();
 
-	// { isErr: true, errMessage: error, content: null }
-	return { user: locals.user, content: jsonResult.content };
+	const responseCategory = await fetch('/api/branda/kategori', { method: 'GET' });
+	const jsonCategory = await responseCategory.json();
+
+	if (jsonReports?.isErr) throw jsonReports.errMessage;
+
+	if (jsonZone?.isErr) throw jsonZone.errMessage;
+
+	if (jsonCategory?.isErr) throw jsonZone.errMessage;
+
+	console.log(jsonReports);
+	console.log(jsonCategory);
+
+	return {
+		user: locals.user,
+		content: jsonReports.content,
+		zone: jsonZone.content,
+		category: jsonCategory.content
+	};
 };

@@ -13,9 +13,6 @@ export const POST = async ({ request, locals }) => {
 		const pool = connection.request();
 		const result = await pool.query(`SELECT * FROM dbo.mahasiswa WHERE nim = '${body?.nim}'`);
 
-		console.log(result);
-		console.log(result.recordset[0].nama);
-
 		if (result.recordset.length < 1)
 			return json({ isErr: true, errMessage: 'NIM Not found', token: null });
 
@@ -39,9 +36,6 @@ export const POST = async ({ request, locals }) => {
 			nim: result.recordset[0].nim,
 			username: result.recordset[0].nama
 		};
-
-		console.log(result.recordset);
-		console.log(locals.user);
 
 		return json({ isErr: false, errMessage: null, token: token });
 	} catch (error) {
