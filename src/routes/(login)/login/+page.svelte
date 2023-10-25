@@ -30,12 +30,13 @@
 	</h4>
 </Modal>
 
-<div class="frame bg-white h-fit text-black">
+<div
+	class="frame bg-white text-black my-[6.1%] laptop1:my-[5.87%] laptop2:my-[2.7%] laptop3:my-[8.57%]"
+>
 	<img src={logoPolinema} alt="logo-polinema" class="logos" />
 	<h1 class="text-3xl font-JKTSans">Selamat Datang di Aduan!</h1>
 
 	<form class="frame-input" method="post" action="?/login">
-		<!-- method harusnya post tapi karena tidak ada database maka dikosongkan -->
 		<div class="nim-input">
 			<label for="nim">NIM</label>
 			<input type="text" id="nim" name="nim" required class="text-lg text-black" bind:value={nim} />
@@ -52,7 +53,6 @@
 			/>
 		</div>
 		<button class="submit-login disabled:bg-slate-400 bg-[#048F7B]" disabled={inputsHasValue}>
-			<!-- on:click={handleLogin} -->
 			<span class="submit-login-text">Masuk</span>
 		</button>
 	</form>
@@ -68,7 +68,6 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		margin-top: 5rem;
 		gap: 2rem;
 
 		border-radius: 1.25rem;

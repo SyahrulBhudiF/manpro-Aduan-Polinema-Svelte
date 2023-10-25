@@ -149,7 +149,9 @@
 			{#if isBerandaClicked}
 				<section class="input w-full h-fit flex justify-between">
 					<img src={ec1} alt="ec" />
-					<div class="flex flex-col text-center align-middle justify-center gap-3 w-[17%]">
+					<div
+						class="flex flex-col text-center align-middle justify-center gap-3 w-[17%] laptop1:w-[25%] laptop3:w-[30%]"
+					>
 						<p class="text-[1.75rem] font-semibold text-white">Ingin ajukan pelaporan?</p>
 						<p class="text-sm text-[#FFFFFF99]">
 							Pastikan Anda mengajukan pelaporan dengan fakta dan norma yang sesuai, ya.
@@ -294,6 +296,7 @@
 							on:click={() => {
 								modalLaporan = true;
 							}}
+							on:keydown
 						>
 							<svg
 								viewBox="0 0 24 24"
@@ -556,7 +559,6 @@
 		padding: 1.03125rem 2.5rem;
 		justify-content: space-between;
 		align-items: center;
-		gap: 61.875rem;
 		flex-shrink: 0;
 	}
 
