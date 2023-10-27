@@ -1,11 +1,17 @@
 <script lang="ts">
+	import { Tooltip } from 'carbon-components-svelte';
+	// import 'carbon-components-svelte/css/g90.css';
+	import ec from '$lib/Assets/Ellipse-9.svg';
+	import ec1 from '$lib/Assets/Ellipse10.svg';
+
 	export let id: string,
 		profile: string,
 		name: string,
 		date: string,
 		category: string,
 		text: string,
-		urgentState: number;
+		urgentState: number,
+		jawaban: string;
 	export let openModal: any;
 </script>
 
@@ -75,12 +81,25 @@
 	</p>
 	<hr />
 
-	<button
-		class="text-[#048F7B] font-semibold text-xs text-right cursor-pointer"
-		on:click={openModal(id)}
-		on:keydown={openModal(id)}
-		tabindex="0">Lihat Respon</button
-	>
+	<div class="flex justify-between">
+		{#if jawaban !== null}
+			<span class="respon flex gap-2 text-[#009855]"><img src={ec} alt="" />Telah Direspon</span>
+			<button
+				class="text-[#048F7B] font-semibold text-xs text-right cursor-pointer"
+				on:click={openModal(id)}
+				on:keydown={openModal(id)}
+				tabindex="0">Lihat Respon</button
+			>
+		{:else if jawaban === null}
+			<span class="notRespon flex gap-2"><img src={ec1} alt="" />Belum Direspon</span>
+			<button
+				class="text-[#048F7B] font-semibold text-xs text-right cursor-pointer"
+				on:click={openModal(id)}
+				on:keydown={openModal(id)}
+				tabindex="0">Respon Sekarang</button
+			>
+		{/if}
+	</div>
 </div>
 
 <style lang="postcss">
@@ -91,5 +110,21 @@
 		gap: 1.25rem;
 		border-radius: 1rem;
 		border: 1px solid #ededed;
+	}
+
+	.respon {
+		padding: 0.5rem 1rem;
+		justify-content: center;
+		align-items: center;
+		border-radius: 6.25rem;
+		background: rgba(0, 152, 85, 0.1);
+	}
+
+	.notRespon {
+		padding: 0.5rem 1rem;
+		justify-content: center;
+		align-items: center;
+		border-radius: 6.25rem;
+		background: rgba(18, 18, 18, 0.05);
 	}
 </style>
