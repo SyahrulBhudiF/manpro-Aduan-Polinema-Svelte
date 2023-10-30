@@ -19,13 +19,34 @@ export const load = async ({ locals, fetch }) => {
 
 	if (jsonCategory?.isErr) throw jsonZone.errMessage;
 
-	console.log(jsonReports);
-	console.log(jsonCategory);
-
 	return {
 		user: locals.user,
 		content: jsonReports.content,
 		zone: jsonZone.content,
 		category: jsonCategory.content
 	};
+};
+
+export const actions = {
+	create: async ({ fetch, request }) => {
+		const formData = await request.formData();
+		const category = formData.get('category')?.toString() ?? '1';
+		const urgentstate = formData.get('urgentstate')?.toString() ?? '1';
+		const zone = formData.get('zone')?.toString() ?? '1';
+		const message = formData.get('message')?.toString() ?? '';
+
+		const response = await fetch('/api/laporan', {
+			method: 'POST',
+			body: JSON.stringify({ category, urgentstate, zone, message })
+		});
+		const result = await response.json();
+
+		console.log(result);
+
+		return {
+			isErr: result?.isErr,
+			errMessage: result?.errMessage,
+			content: result?.content
+		};
+	}
 };

@@ -15,7 +15,7 @@ export const actions = {
 		if (username == null) return { isErr: true, errContnet: 'Username should not empty' };
 		if (password == null) return { isErr: true, errContnet: 'Password should not empty' };
 
-		console.log(username, password);
+		// console.log(username, password);
 
 		const response = await fetch('/api/auth', {
 			method: 'POST',

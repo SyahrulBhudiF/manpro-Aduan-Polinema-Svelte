@@ -5,24 +5,24 @@ import mssql from 'mssql';
 
 export const POST = async ({ request, locals }) => {
 	try {
-		const body = await request.formData();
+		const body = await request.json();
 
 		const connection = await connect();
 		const pool = connection.request();
 
-		const category = body.get('category')?.toString() ?? '1';
-		const urgentstate = body.get('urgentstate')?.toString() ?? '1';
-		const zone = body.get('urgentstate')?.toString() ?? '1';
-		const message = body.get('urgentstate')?.toString() ?? '';
+		const category = body.category ?? '1';
+		const urgentstate = body.urgentstate ?? '1';
+		const zone = body.zona ?? '1';
+		const message = body.message ?? '';
 
 		const statement = `INSERT INTO dbo.laporan (nim,kategori,urgensi, id_zona,pesan,[status],created_at) VALUES(
-            CONVERT(varchar,'${locals.user.id?.toString()}'),
-            CONVERT(int,${category}),
-            CONVERT(int,${urgentstate}),
-            CONVERT(int,${zone}),
-            CONVERT(text,'${message.toString()}'),
-            CONVERT(int,0),
-            CONVERT(bigint,${Date.now() / 1000}))`;
+		    CONVERT(varchar,'${locals.user.id?.toString()}'),
+		    CONVERT(int,${category}),
+		    CONVERT(int,${urgentstate}),
+		    CONVERT(int,${zone}),
+		    CONVERT(text,'${message.toString()}'),
+		    CONVERT(int,0),
+		    CONVERT(bigint,${Date.now() / 1000}))`;
 
 		console.log(statement);
 
@@ -47,9 +47,9 @@ export const GET = async ({ url }) => {
 
 		if (status == null) throw error(400, { message: 'Status is Empty' });
 
-		const result = await getCountLaporan(status.toLowerCase() === 'true' ? true : false);
+		const result = await getCountLaporan(status.toLowerCase() === '1' ? true : false);
 
-		console.log(result);
+		// console.log(result);
 
 		return json({ isErr: false, errMessage: null, content: result.content });
 	} catch (error) {

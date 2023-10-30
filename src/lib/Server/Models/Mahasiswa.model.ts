@@ -19,7 +19,7 @@ export const login = async (
 }> => {
 	const { nim, password } = body;
 
-	console.log(body);
+	// console.log(body);
 
 	if (nim == null) return { isErr: true, errMessage: 'NIM Not found', content: null };
 	if (password == null) return { isErr: true, errMessage: 'Password are incorrect', content: null };
