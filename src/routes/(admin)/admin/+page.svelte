@@ -89,8 +89,8 @@
 			<img src={profile} alt="profile.png" />
 			{#if data.user != null}
 				<div class="flex flex-col">
-					<span class="text-white font-[600] text-sm">{data.user.username}</span>
-					<span class="font-medium text-xs text-[#FFFFFF99]">{data.user.nim}</span>
+					<span class="text-white font-[600] text-sm">{data.user.name}</span>
+					<span class="font-medium text-xs text-[#FFFFFF99]">{data.user.category}</span>
 				</div>
 				<img src={arrow} alt="arrow" class="w-6 h-6 cursor-pointer" />
 			{/if}
@@ -100,11 +100,29 @@
 		<div class="flex justify-start align-middle w-[96%] h-fit py-[1.48rem]">
 			<section class="flex flex-col w-full gap-6">
 				<section class="grid grid-cols-3 gap-3">
-					<Report ec={ec3} img={danger} text="Total Laporan" total={1280} idenfier="Laporan" />
+					<Report
+						ec={ec3}
+						img={danger}
+						text="Total Laporan"
+						total={data.content.length}
+						idenfier="Laporan"
+					/>
 
-					<Report ec={ec4} img={centang} text="Telah Direspon" total={12372} idenfier="Direspon" />
+					<Report
+						ec={ec4}
+						img={centang}
+						text="Telah Direspon"
+						total={data.count_laporan_1.jumlah_laporan}
+						idenfier="Direspon"
+					/>
 
-					<Report ec={ec5} img={mirror} text="Belum Direspon" total={588} idenfier="Pertanyaan" />
+					<Report
+						ec={ec5}
+						img={mirror}
+						text="Belum Direspon"
+						total={data.count_laporan_0.jumlah_laporan}
+						idenfier="Pertanyaan"
+					/>
 				</section>
 
 				<section class="mainContent">

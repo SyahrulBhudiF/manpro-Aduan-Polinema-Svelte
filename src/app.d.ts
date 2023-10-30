@@ -5,8 +5,8 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user: {
-				nim: string | null;
-				username: string | null;
+				category: string | null;
+				name: string | null;
 				id: string | null;
 			};
 		}

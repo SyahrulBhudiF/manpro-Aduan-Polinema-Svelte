@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 
 export const load = async ({ locals, fetch }) => {
 	if (locals.user == null) throw redirect(301, '/login');
-	if (locals.user.nim == null) throw redirect(301, '/login');
+	if (locals.user.id == null) throw redirect(301, '/login');
 
 	const responseReports = await fetch('/api/branda', { method: 'GET' });
 	const jsonReports = await responseReports.json();

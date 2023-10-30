@@ -1,5 +1,6 @@
 import { connect } from '$lib/Server/Database/Connect.js';
-import { json } from '@sveltejs/kit';
+import { getCountLaporan } from '$lib/Server/Models/Laporan.model.js';
+import { error, json } from '@sveltejs/kit';
 import mssql from 'mssql';
 
 export const POST = async ({ request, locals }) => {
@@ -9,15 +10,13 @@ export const POST = async ({ request, locals }) => {
 		const connection = await connect();
 		const pool = connection.request();
 
-		console.log(body);
-
 		const category = body.get('category')?.toString() ?? '1';
 		const urgentstate = body.get('urgentstate')?.toString() ?? '1';
 		const zone = body.get('urgentstate')?.toString() ?? '1';
 		const message = body.get('urgentstate')?.toString() ?? '';
 
 		const statement = `INSERT INTO dbo.laporan (nim,kategori,urgensi, id_zona,pesan,[status],created_at) VALUES(
-            CONVERT(varchar,'${locals.user.nim?.toString()}'),
+            CONVERT(varchar,'${locals.user.id?.toString()}'),
             CONVERT(int,${category}),
             CONVERT(int,${urgentstate}),
             CONVERT(int,${zone}),
@@ -36,6 +35,23 @@ export const POST = async ({ request, locals }) => {
 			return json({ isErr: true, errMessage: 'Failed to execute statement', content: null });
 
 		return json({ isErr: false, errMessage: null, content: 'Laporan berhasil dibuat' });
+	} catch (error) {
+		console.error(error);
+		return json({ isErr: true, errMessage: error, content: null });
+	}
+};
+
+export const GET = async ({ url }) => {
+	try {
+		const status = url.searchParams.get('status');
+
+		if (status == null) throw error(400, { message: 'Status is Empty' });
+
+		const result = await getCountLaporan(status.toLowerCase() === 'true' ? true : false);
+
+		console.log(result);
+
+		return json({ isErr: false, errMessage: null, content: result.content });
 	} catch (error) {
 		console.error(error);
 		return json({ isErr: true, errMessage: error, content: null });

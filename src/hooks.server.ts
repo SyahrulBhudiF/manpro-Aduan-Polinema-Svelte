@@ -2,13 +2,11 @@ import { JWT_TOKEN_SERIALIZER } from '$env/static/private';
 import jwt from 'jsonwebtoken';
 
 export const handle = async ({ event, resolve }) => {
-	if (event.cookies.getAll().length < 1) return resolve(event);
-
 	if (event.locals.user == null) {
 		event.locals.user = {
 			id: null,
-			nim: null,
-			username: null
+			name: null,
+			category: null
 		};
 	}
 
@@ -22,16 +20,12 @@ export const handle = async ({ event, resolve }) => {
 			throw new Error('Something went wrong');
 		}
 
-		console.log(token);
-
 		event.locals.user = {
-			id: '1',
-			nim: token?.nim,
-			username: token?.userName
+			id: token?.id,
+			name: token?.name,
+			category: token?.category
 		};
 	}
-
-	console.log(event.locals.user);
 
 	return resolve(event);
 };

@@ -7,8 +7,6 @@ export const GET = async () => {
 		const pool = connection.request();
 		const result = await pool.query(`SELECT * FROM dbo.DisplayBranda`);
 
-		console.log(result.recordset);
-
 		return json({ isErr: false, errMessage: null, content: result.recordset });
 	} catch (error) {
 		console.error(error);

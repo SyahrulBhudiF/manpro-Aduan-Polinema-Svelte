@@ -133,8 +133,8 @@
 			<img src={profile} alt="profile.png" />
 			{#if data.user != null}
 				<div class="flex flex-col">
-					<span class="text-white font-[600] text-sm">{data.user.username}</span>
-					<span class="font-medium text-xs text-[#FFFFFF99]">{data.user.nim}</span>
+					<span class="text-white font-[600] text-sm">{data.user.name}</span>
+					<span class="font-medium text-xs text-[#FFFFFF99]">{data.user.id}</span>
 				</div>
 				<img src={arrow} alt="arrow" class="w-6 h-6 cursor-pointer" />
 			{/if}

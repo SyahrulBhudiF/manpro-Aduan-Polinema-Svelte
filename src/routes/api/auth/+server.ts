@@ -1,44 +1,57 @@
 import { JWT_TOKEN_SERIALIZER } from '$env/static/private';
-import { connect } from '$lib/Server/Database/Connect.js';
-// import Cryptr  from 'cryptr'
-import bcrypt from 'bcrypt';
-import { json } from '@sveltejs/kit';
+import { login as adminLg } from '$lib/Server/Models/Admin.model.js';
+import { login as mhsLg } from '$lib/Server/Models/Mahasiswa.model.js';
+import { error, json } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 
 export const POST = async ({ request, locals }) => {
 	try {
 		const body = await request.json();
 
-		const connection = await connect();
-		const pool = connection.request();
-		const result = await pool.query(`SELECT * FROM dbo.mahasiswa WHERE nim = '${body?.nim}'`);
-
-		if (result.recordset.length < 1)
-			return json({ isErr: true, errMessage: 'NIM Not found', token: null });
-
-		const passwordMatch = await bcrypt.compare(body?.password, result.recordset[0]?.password);
-
-		if (!passwordMatch)
-			return json({ isErr: true, errMessage: 'Password are Incorrect', token: null });
-
+		const hasUsername = Object.prototype.hasOwnProperty.call(body, 'username');
+		const hasNIM = Object.prototype.hasOwnProperty.call(body, 'nim');
+		/* eslint-disable  @typescript-eslint/no-explicit-any */
+		let loginResult: any | null = null;
 		let token;
-		if (result.recordset.length > 0)
+
+		if (hasUsername && !hasNIM) {
+			loginResult = await adminLg({ username: body?.username, password: body?.password });
+		}
+
+		if (hasNIM && !hasUsername) {
+			loginResult = await mhsLg({ nim: body?.nim, password: body?.password });
+		}
+
+		// console.log(loginResult);
+
+		if (loginResult.isErr) {
+			throw error(404, { message: loginResult.errMessage });
+		}
+
+		if (!loginResult.isErr && loginResult.content != null) {
 			token = jwt.sign(
-				{ userName: result.recordset[0].nama, nim: result.recordset[0].nim },
+				{
+					name: loginResult.content.name,
+					id: loginResult.content.id,
+					category: loginResult.content.category
+				},
 				JWT_TOKEN_SERIALIZER,
 				{
 					expiresIn: '1d'
 				}
 			);
 
-		locals.user = {
-			id: '224',
-			nim: result.recordset[0].nim,
-			username: result.recordset[0].nama
-		};
+			locals.user = {
+				id: loginResult.content.id,
+				name: loginResult.content.name,
+				category: loginResult.content.category
+			};
+		}
 
 		return json({ isErr: false, errMessage: null, token: token });
-	} catch (error) {
-		return json({ isErr: true, errMessage: error, token: null });
+	} catch (err) {
+		/* eslint-disable @typescript-eslint/ban-ts-comment */
+		//@ts-ignore
+		throw error(404, { message: err });
 	}
 };
