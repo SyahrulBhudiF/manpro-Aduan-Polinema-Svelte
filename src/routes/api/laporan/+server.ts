@@ -35,7 +35,7 @@ export const POST = async ({ request, locals }) => {
 		if (effectedRow[0] < 1)
 			return json({ isErr: true, errMessage: 'Failed to execute statement', content: null });
 
-		return json({ isErr: false, errMessage: null, content: null });
+		return json({ isErr: false, errMessage: null, content: 'Laporan berhasil dibuat' });
 	} catch (error) {
 		console.error(error);
 		return json({ isErr: true, errMessage: error, content: null });
