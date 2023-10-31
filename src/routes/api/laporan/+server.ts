@@ -1,5 +1,9 @@
 import { connect } from '$lib/Server/Database/Connect.js';
-import { getCountLaporan } from '$lib/Server/Models/Laporan.model.js';
+import {
+	deleteLaporanMHS,
+	getCountLaporan,
+	updateLaporanMHS
+} from '$lib/Server/Models/Laporan.model.js';
 import { error, json } from '@sveltejs/kit';
 import mssql from 'mssql';
 
@@ -10,10 +14,10 @@ export const POST = async ({ request, locals }) => {
 		const connection = await connect();
 		const pool = connection.request();
 
-		const category = body.category ?? '1';
-		const urgentstate = body.urgentstate ?? '1';
-		const zone = body.zona ?? '1';
-		const message = body.message ?? '';
+		const category = body.category;
+		const urgentstate = body.urgentstate;
+		const zone = body.zone;
+		const message = body.message;
 
 		const statement = `INSERT INTO dbo.laporan (nim,kategori,urgensi, id_zona,pesan,[status],created_at) VALUES(
 		    CONVERT(varchar,'${locals.user.id?.toString()}'),
@@ -56,4 +60,37 @@ export const GET = async ({ url }) => {
 		console.error(error);
 		return json({ isErr: true, errMessage: error, content: null });
 	}
+};
+// {
+// 	nim: string;
+// 	category: number;
+// 	urgentstate: number;
+// 	zone: number;
+// 	message: string;
+// }
+export const PUT = async ({ request }) => {
+	const body = await request.json();
+
+	const result = await updateLaporanMHS(body);
+
+	if (result.isErr) throw error(400, { message: result.errMessage! });
+
+	return json({
+		isErr: false,
+		errMessage: null,
+		content: result.content
+	});
+};
+export const DELETE = async ({ request }) => {
+	const body = await request.json();
+
+	const result = await deleteLaporanMHS(body);
+
+	if (result.isErr) throw error(400, { message: result.errMessage! });
+
+	return json({
+		isErr: false,
+		errMessage: null,
+		content: result.content
+	});
 };

@@ -55,6 +55,9 @@ devDependencies:
   eslint-plugin-svelte:
     specifier: ^2.30.0
     version: 2.34.0(eslint@8.52.0)(svelte@4.2.2)
+  generate-unique-id:
+    specifier: ^2.0.3
+    version: 2.0.3
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
@@ -1871,6 +1874,10 @@ packages:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wide-align: 1.1.5
+    dev: true
+
+  /generate-unique-id@2.0.3:
+    resolution: {integrity: sha512-oADhkjv6nsiHNJNa+kCe/h6vqgooEPmASHU40hWGbhDODb/xKp5ej7l+7BNs3bQ/v8DCbaVJ42//kN2umQfr6A==}
     dev: true
 
   /get-func-name@2.0.2:

@@ -5,7 +5,9 @@ export const GET = async () => {
 	try {
 		const connection = await connect();
 		const pool = connection.request();
-		const result = await pool.query(`SELECT * FROM dbo.DisplayBranda`);
+		const result = await pool.query(
+			`SELECT * FROM dbo.DisplayBranda WHERE is_edited_mhs = 0 AND is_deleted_mhs = 0`
+		);
 
 		return json({ isErr: false, errMessage: null, content: result.recordset });
 	} catch (error) {
