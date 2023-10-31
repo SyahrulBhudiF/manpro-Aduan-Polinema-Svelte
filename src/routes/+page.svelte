@@ -805,12 +805,20 @@
 					<button
 						class="flex justify-center items-center gap-2 text-[#E14942] text-center text-sm not-italic font-semibold leading-normal px-6 py-3 font-JKTSans rounded-[0.3125rem] border border-[#d73e36]"
 						type="submit"
+						on:click={() => {
+							modalLaporan = { show: false, target: null };
+							triggerForm('deleteLP');
+						}}
 					>
 						Hapus Laporan
 					</button>
 					<button
 						class="button w-fit inline-flex justify-center items-center gap-2 px-6 py-3 rounded-[0.3125rem] bg-[#048F7B] text-white"
 						type="submit"
+						on:click={() => {
+							modalLaporan = { show: false, target: null };
+							triggerForm('updateLP');
+						}}
 					>
 						Edit Laporan
 					</button>
