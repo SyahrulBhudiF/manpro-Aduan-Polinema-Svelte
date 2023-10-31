@@ -584,7 +584,7 @@
 					class="w-full h-full flex justify-center align-middle"
 					use:enhance
 					action="?/create"
-					on:submit={() => ({ show: false, target: null })}
+					on:submit={() => (modalLaporan = { show: false, target: null })}
 				>
 					<div class="form-contain">
 						<div class="container-category">
@@ -742,11 +742,7 @@
 
 						<div class="flex flex-col">
 							<p class="text-sm text-[#121212] font-semibold">
-								{selectedLP.nama.length > 2
-									? selectedLP.nama.charAt(0) +
-									  '*'.repeat(selectedLP.nama.length - 2) +
-									  selectedLP.nama.substring(selectedLP.nama.length - 1)
-									: selectedLP.nama}
+								{selectedLP.nama}
 							</p>
 							<p class="text-xs text-black text-opacity-40 font-normal">
 								{new Date(selectedLP.created_at * 1000).toLocaleDateString()}
@@ -854,7 +850,7 @@
 					class="w-full h-full flex justify-center align-middle"
 					use:enhance
 					action="?/update"
-					on:submit={() => ({ show: false, target: null })}
+					on:submit={() => (modalLaporan = { show: false, target: null })}
 				>
 					<div class="form-contain">
 						<div class="container-category">

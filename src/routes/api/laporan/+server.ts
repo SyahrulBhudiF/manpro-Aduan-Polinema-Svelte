@@ -14,10 +14,10 @@ export const POST = async ({ request, locals }) => {
 		const connection = await connect();
 		const pool = connection.request();
 
-		const category = body.category ?? '1';
-		const urgentstate = body.urgentstate ?? '1';
-		const zone = body.zona ?? '1';
-		const message = body.message ?? '';
+		const category = body.category;
+		const urgentstate = body.urgentstate;
+		const zone = body.zone;
+		const message = body.message;
 
 		const statement = `INSERT INTO dbo.laporan (nim,kategori,urgensi, id_zona,pesan,[status],created_at) VALUES(
 		    CONVERT(varchar,'${locals.user.id?.toString()}'),
