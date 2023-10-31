@@ -38,7 +38,7 @@ export const login = async (
 		errMessage: null,
 		content: {
 			name: result.recordset[0]?.nama,
-			id: result.recordset[0]?.id_admin,
+			id: result.recordset[0]?.uuid,
 			category: result.recordset[0]?.kategori
 		}
 	};

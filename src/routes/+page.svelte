@@ -102,7 +102,7 @@
 	if (form != null) {
 		setTimeout(() => {
 			form = null;
-		}, 10000);
+		}, 5000);
 	}
 </script>
 
@@ -461,384 +461,90 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin, nama_zona }, index}
-										<tr class="w-full text-center h-14 border-b-2 border-slate-200">
-											<td>
-												{new Date(created_at * 1000).toLocaleDateString()}
-											</td>
-											<td>
-												<span class="col-pesan font-JKTSans font-semibold">
-													{kategori}
-												</span>
-											</td>
-											<td>
-												<span
-													class="col-pesan font-JKTSans font-semibold"
-													style="font-weight: bold !important"
-												>
-													{#each pesan.split(' ') as value, index}
-														{index > 7 ? '' : value + ' '}
-													{/each}
-													{pesan.split(' ').length > 7 ? '...' : ''}
-												</span>
-											</td>
-											<td>
-												<span class="col-pesan font-JKTSans font-semibold">
-													{urgensi == 1
-														? 'Low'
-														: urgensi == 2
-														? 'Intermediate'
-														: urgensi == 3
-														? 'High'
-														: 'Urgent'}
-												</span>
-											</td>
-											<td>
-												<span class="col-pesan font-JKTSans font-semibold">
-													{nama_zona}
-												</span>
-											</td>
-											<td>
-												{status == 0 ? 'Belum direspon' : 'Telah direspon'}
-											</td>
-											<td class="relative group">
-												<span class="w-full h-full flex justify-end" role="button">
-													<button class="col-pesan w-fit h-full">
-														<svg
-															xmlns="http://www.w3.org/2000/svg"
-															viewBox="0 0 24 24"
-															class="fill-current w-7"
-															><path
-																d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-															/></svg
-														>
-													</button>
-												</span>
-												<div
-													class="inline-flex flex-col items-start gap-2 p-4 absolute scale-0 group-hover:scale-100 border shadow-[0px_10px_32px_0px_rgba(18,18,18,0.10)] rounded-lg border-solid border-[#EDEDED] bg-[#fff] right-2 z-50"
-												>
-													<button
-														class="border-b-[1px] w-full pb-2 hover:text-[#00b4e6]"
-														on:click={() => {
-															openDetailLP(id_laporan);
-															openForm('detailLP');
-														}}>Detail</button
+									{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin, nama_zona, is_deleted_mhs, is_edited_mhs }, index}
+										{#if is_deleted_mhs == 0 && is_edited_mhs == 0}
+											<tr class="w-full text-center h-14 border-b-2 border-slate-200">
+												<td>
+													{new Date(created_at * 1000).toLocaleDateString()}
+												</td>
+												<td>
+													<span class="col-pesan font-JKTSans font-semibold">
+														{kategori}
+													</span>
+												</td>
+												<td>
+													<span
+														class="col-pesan font-JKTSans font-semibold"
+														style="font-weight: bold !important"
 													>
-
-													<button class="border-b-[1px] w-full pb-2 hover:text-[#00b4e6]"
-														>Edit</button
-													>
-
-													<button> <span class="text-[#E14942] w-full"> Delete </span> </button>
-												</div>
-											</td>
-										</tr>
-										{#if modalLaporan.target == 'createLP' && modalLaporan.show}
-											<div class="opacity-0" style="display: none;">
-												{setTimeout(() => {
-													if (document.getElementById('card-modal')?.classList.contains('scale-0'))
-														document.getElementById('card-modal')?.classList.toggle('scale-0');
-													if (
-														document.getElementById('card-modal')?.classList.contains('scale-100')
-													)
-														document.getElementById('card-modal')?.classList.toggle('scale-100');
-												}, 1)}
-											</div>
-											<div
-												class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}"
-												id="card-modal"
-											>
-												<div
-													class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
-													id="modal-detail"
-												>
-													<div class="flex justify-between mx-5 mb-4">
-														<p class="text-[#121212] text-xl font-semibold">Buat Laporan</p>
-
-														<button
-															class="btn"
-															on:click={() => {
-																modalLaporan = { show: false, target: null };
-															}}><img src={x} alt="close" /></button
-														>
-													</div>
-													<form
-														method="post"
-														class="w-full h-full flex justify-center align-middle"
-														use:enhance
-														action="?/create"
-														on:submit={() => ({ show: false, target: null })}
-													>
-														<div class="form-contain">
-															<div class="container-category">
-																<span
-																	class="text-[#121212] text-lg not-italic font-semibold leading-[normal]"
-																>
-																	Kategori
-																</span>
-																<div class="flex gap-2">
-																	{#each data.category as { id_kategori, nama_kategori }, idx}
-																		<label
-																			class="label-category peer-checked:border-blue-600 peer-checked:text-blue-600"
-																		>
-																			<input
-																				type="radio"
-																				name="category"
-																				class="radio-in"
-																				required
-																				value={id_kategori}
-																				id={nama_kategori}
-																			/>
-																			<span class="radio-text">
-																				{nama_kategori}
-																			</span>
-																		</label>
-																	{/each}
-																</div>
-															</div>
-															<div class="container-level mt-[1.5rem] gap-2">
-																<span
-																	class="text-[#121212] text-lg not-italic font-semibold leading-[normal]"
-																>
-																	Urgensi
-																</span>
-																<div class="flex gap-2">
-																	<label class="label-category">
-																		<input
-																			type="radio"
-																			name="urgentstate"
-																			class="radio-in"
-																			value="1"
-																			required
-																			id="low"
-																		/>
-																		<span class="radio-text"> Low </span>
-																	</label>
-																	<label class="label-category">
-																		<input
-																			type="radio"
-																			name="urgentstate"
-																			class="radio-in"
-																			required
-																			value="2"
-																			id="intermediate"
-																		/>
-																		<span class="radio-text"> Intermediate </span>
-																	</label>
-																	<label class="label-category">
-																		<input
-																			type="radio"
-																			name="urgentstate"
-																			class="radio-in"
-																			required
-																			value="3"
-																			id="high"
-																		/>
-																		<span class="radio-text"> High </span>
-																	</label>
-																	<label class="label-category">
-																		<input
-																			type="radio"
-																			name="urgentstate"
-																			class="radio-in"
-																			required
-																			value="4"
-																			id="urgent"
-																		/>
-																		<span class="radio-text"> Urgent </span>
-																	</label>
-																</div>
-															</div>
-															<div class="container-level mt-[1.5rem]">
-																<span
-																	class="text-[#121212] text-lg not-italic font-semibold leading-[normal]"
-																>
-																	Zona
-																</span>
-																<div class="flex">
-																	<select
-																		name="zone"
-																		id="zone"
-																		required
-																		class="selection-zone w-full mt-2 flex justify-between items-center self-stretch bg-transparent border-2 p-4 rounded-lg border-solid border-[#EDEDED] text-[#121212] text-sm not-italic font-semibold leading-[140%] font-JKTSans"
-																	>
-																		<option selected disabled class="font-semibold">
-																			Pilih Zona
-																		</option>
-																		{#each data.zone as { id_zona, nama_zona }, idx}
-																			<option value={id_zona} class="font-semibold">
-																				{nama_zona}</option
-																			>
-																		{/each}
-																	</select>
-																</div>
-															</div>
-															<div class="container-level mt-[1.5rem] w-full">
-																<span
-																	class="text-[#121212] text-lg not-italic font-semibold leading-[normal]"
-																>
-																	Pesan
-																</span>
-																<div class="flex">
-																	<textarea
-																		name="message"
-																		id="message"
-																		rows="5"
-																		required
-																		placeholder="Masukkan pesan anda"
-																		class="w-full max-h-52 overflow-auto flex justify-center items-start gap-[2.1875rem] border p-3 rounded-[0.625rem] border-solid border-[#EFEFEF] font-JKTSans resize-none"
-																	/>
-																</div>
-															</div>
-															<div class="flex w-full justify-center mt-10">
-																<button
-																	class="button w-fit inline-flex justify-center items-center gap-2 px-6 py-3 rounded-[0.3125rem] bg-[#048F7B] text-white"
-																	type="submit"
-																>
-																	Kirim Laporan
-																</button>
-															</div>
-														</div>
-													</form>
-												</div>
-											</div>
-										{/if}
-										{#if modalLaporan.target == 'detailLP' && modalLaporan.show}
-											<div class="opacity-0" style="display: none;">
-												{setTimeout(() => {
-													if (
-														document
-															.getElementById('card-modal-detail')
-															?.classList.contains('scale-0')
-													)
-														document
-															.getElementById('card-modal-detail')
-															?.classList.toggle('scale-0');
-													if (
-														document
-															.getElementById('card-modal-detail')
-															?.classList.contains('scale-100')
-													)
-														document
-															.getElementById('card-modal-detail')
-															?.classList.toggle('scale-100');
-												}, 1)}
-											</div>
-											<div
-												class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}"
-												id="card-modal-detail"
-											>
-												<div
-													class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
-													id="modal-detail"
-												>
-													<div class="flex justify-between mx-5 mb-4">
-														<p class="text-[#121212] text-xl font-semibold">Detail Laporan</p>
-
-														<button
-															class="btn"
-															on:click={() => {
-																modalLaporan = { show: false, target: null };
-															}}><img src={x} alt="close" /></button
-														>
-													</div>
-
-													<div class="flex flex-col p-6 gap-5 overflow-auto max-h-96">
-														<div class="flex">
-															<img
-																src={profile}
-																alt="profile"
-																class="p-2 bg-[#F5F5F5] rounded-full"
-															/>
-
-															<div class="flex flex-col">
-																<p class="text-sm text-[#121212] font-semibold">
-																	{selectedLP.nama.length > 2
-																		? selectedLP.nama.charAt(0) +
-																		  '*'.repeat(selectedLP.nama.length - 2) +
-																		  selectedLP.nama.substring(selectedLP.nama.length - 1)
-																		: selectedLP.nama}
-																</p>
-																<p class="text-xs text-black text-opacity-40 font-normal">
-																	{new Date(created_at * 1000).toLocaleDateString()}
-																</p>
-															</div>
-														</div>
-														<hr />
-
-														<span
-															class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
-															>{selectedLP.kategori}</span
-														>
-
-														<p
-															class="text-black text-opacity-70 text-justify max-h-40 overflow-auto"
-														>
-															{selectedLP.pesan}
-														</p>
-													</div>
-
-													<p class="text-[#121212] text-2xl font-medium mx-5 mb-5">Respon</p>
-													{#if selectedLP.namaAdmin != null}
-														<div class="w-full mb-5">
-															<div class="flex gap-4 align-baseline mx-6 mb-4">
-																<img src={admin} alt="admin.png" class="w-12 h-12" />
-																<svg
-																	viewBox="0 0 16 16"
-																	xmlns="http://www.w3.org/2000/svg"
-																	class="fill-current w-5 absolute stroke-white bottom-[8.75rem] left-[5.5rem]"
-																>
-																	<path
-																		d="M14.3733 7.16012L13.4667 6.10679C13.2933 5.90679 13.1533 5.53345 13.1533 5.26679V4.13345C13.1533 3.42679 12.5733 2.84679 11.8667 2.84679H10.7333C10.4733 2.84679 10.0933 2.70679 9.89334 2.53345L8.84 1.62679C8.38 1.23345 7.62667 1.23345 7.16 1.62679L6.11334 2.54012C5.91334 2.70679 5.53334 2.84679 5.27334 2.84679H4.12C3.41334 2.84679 2.83334 3.42679 2.83334 4.13345V5.27345C2.83334 5.53345 2.69334 5.90679 2.52667 6.10679L1.62667 7.16679C1.24 7.62679 1.24 8.37345 1.62667 8.83345L2.52667 9.89345C2.69334 10.0935 2.83334 10.4668 2.83334 10.7268V11.8668C2.83334 12.5735 3.41334 13.1535 4.12 13.1535H5.27334C5.53334 13.1535 5.91334 13.2935 6.11334 13.4668L7.16667 14.3735C7.62667 14.7668 8.38 14.7668 8.84667 14.3735L9.9 13.4668C10.1 13.2935 10.4733 13.1535 10.74 13.1535H11.8733C12.58 13.1535 13.16 12.5735 13.16 11.8668V10.7335C13.16 10.4735 13.3 10.0935 13.4733 9.89345L14.38 8.84012C14.7667 8.38012 14.7667 7.62012 14.3733 7.16012ZM10.7733 6.74012L7.55334 9.96012C7.46 10.0535 7.33334 10.1068 7.2 10.1068C7.06667 10.1068 6.94 10.0535 6.84667 9.96012L5.23334 8.34679C5.04 8.15345 5.04 7.83345 5.23334 7.64012C5.42667 7.44679 5.74667 7.44679 5.94 7.64012L7.2 8.90012L10.0667 6.03345C10.26 5.84012 10.58 5.84012 10.7733 6.03345C10.9667 6.22679 10.9667 6.54679 10.7733 6.74012Z"
-																		fill="#0071FF"
-																	/>
-																</svg>
-																<!-- {console.log(namaAdmin)} -->
-																<div class="flex flex-col h-full gap-2">
-																	<span class="text-[#121212] font-[600] text-sm"
-																		>{selectedLP.namaAdmin}</span
-																	>
-																	<span class="font-medium text-xs text-black text-opacity-40"
-																		>{new Date(
-																			selectedLP.answered_at * 1000
-																		).toLocaleDateString()}</span
-																	>
-																</div>
-															</div>
-															<p class="text-black text-opacity-70 text-justify mx-6">
-																{selectedLP.jawaban}
-															</p>
-														</div>
-													{:else}
-														<div class="w-full flex justify-center align-middle mb-5">
-															<div class="w-full">
-																<div class="flex w-full justify-center">
-																	<PersonExamine />
-																</div>
-																<div class="w-full flex">
-																	<span class="w-full h-full text-center">
-																		Belum ada respon, laporan anda masih diproses oleh admin
-																	</span>
-																</div>
-															</div>
-														</div>
-													{/if}
-													<div class="flex w-full justify-center mt-10 gap-5">
-														<button
-															class="flex justify-center items-center gap-2 text-[#E14942] text-center text-sm not-italic font-semibold leading-normal px-6 py-3 font-JKTSans rounded-[0.3125rem] border border-[#d73e36]"
-															type="submit"
-														>
-															Hapus Laporan
+														{#each pesan.split(' ') as value, index}
+															{index > 7 ? '' : value + ' '}
+														{/each}
+														{pesan.split(' ').length > 7 ? '...' : ''}
+													</span>
+												</td>
+												<td>
+													<span class="col-pesan font-JKTSans font-semibold">
+														{urgensi == 1
+															? 'Low'
+															: urgensi == 2
+															? 'Intermediate'
+															: urgensi == 3
+															? 'High'
+															: 'Urgent'}
+													</span>
+												</td>
+												<td>
+													<span class="col-pesan font-JKTSans font-semibold">
+														{nama_zona}
+													</span>
+												</td>
+												<td>
+													{status == 0 ? 'Belum direspon' : 'Telah direspon'}
+												</td>
+												<td class="relative group">
+													<span class="w-full h-full flex justify-end" role="button">
+														<button class="col-pesan w-fit h-full">
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																viewBox="0 0 24 24"
+																class="fill-current w-7"
+																><path
+																	d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+																/></svg
+															>
 														</button>
+													</span>
+													<div
+														class="inline-flex flex-col items-start gap-2 p-4 absolute scale-0 group-hover:scale-100 border shadow-[0px_10px_32px_0px_rgba(18,18,18,0.10)] rounded-lg border-solid border-[#EDEDED] bg-[#fff] right-2 z-50"
+													>
 														<button
-															class="button w-fit inline-flex justify-center items-center gap-2 px-6 py-3 rounded-[0.3125rem] bg-[#048F7B] text-white"
-															type="submit"
+															class="border-b-[1px] w-full pb-2 hover:text-[#00b4e6]"
+															on:click={() => {
+																openDetailLP(id_laporan);
+																openForm('detailLP');
+															}}>Detail</button
 														>
-															Edit Laporan
+
+														<button
+															class="border-b-[1px] w-full pb-2 hover:text-yellow-500"
+															on:click={() => {
+																openDetailLP(id_laporan);
+																openForm('updateLP');
+															}}>Edit</button
+														>
+
+														<button
+															on:click={() => {
+																openDetailLP(id_laporan);
+																openForm('deleteLP');
+															}}
+														>
+															<span class="text-[#E14942] w-full"> Delete </span>
 														</button>
 													</div>
-												</div>
-											</div>
+												</td>
+											</tr>
 										{/if}
 									{/each}
 								</tbody>
@@ -849,6 +555,577 @@
 			</section>
 		</div>
 	</div>
+	{#if modalLaporan.target == 'createLP' && modalLaporan.show}
+		<div class="opacity-0" style="display: none;">
+			{setTimeout(() => {
+				if (document.getElementById('card-modal')?.classList.contains('scale-0'))
+					document.getElementById('card-modal')?.classList.toggle('scale-0');
+				if (document.getElementById('card-modal')?.classList.contains('scale-100'))
+					document.getElementById('card-modal')?.classList.toggle('scale-100');
+			}, 1)}
+		</div>
+		<div class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}" id="card-modal">
+			<div
+				class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
+				id="modal-detail"
+			>
+				<div class="flex justify-between mx-5 mb-4">
+					<p class="text-[#121212] text-xl font-semibold">Buat Laporan</p>
+
+					<button
+						class="btn"
+						on:click={() => {
+							modalLaporan = { show: false, target: null };
+						}}><img src={x} alt="close" /></button
+					>
+				</div>
+				<form
+					method="post"
+					class="w-full h-full flex justify-center align-middle"
+					use:enhance
+					action="?/create"
+					on:submit={() => ({ show: false, target: null })}
+				>
+					<div class="form-contain">
+						<div class="container-category">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Kategori
+							</span>
+							<div class="flex gap-2">
+								{#each data.category as { id_kategori, nama_kategori }, idx}
+									<label
+										class="label-category peer-checked:border-blue-600 peer-checked:text-blue-600"
+									>
+										<input
+											type="radio"
+											name="category"
+											class="radio-in"
+											required
+											value={id_kategori}
+											id={nama_kategori}
+										/>
+										<span class="radio-text">
+											{nama_kategori}
+										</span>
+									</label>
+								{/each}
+							</div>
+						</div>
+						<div class="container-level mt-[1.5rem] gap-2">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Urgensi
+							</span>
+							<div class="flex gap-2">
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										value="1"
+										required
+										id="low"
+									/>
+									<span class="radio-text"> Low </span>
+								</label>
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										required
+										value="2"
+										id="intermediate"
+									/>
+									<span class="radio-text"> Intermediate </span>
+								</label>
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										required
+										value="3"
+										id="high"
+									/>
+									<span class="radio-text"> High </span>
+								</label>
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										required
+										value="4"
+										id="urgent"
+									/>
+									<span class="radio-text"> Urgent </span>
+								</label>
+							</div>
+						</div>
+						<div class="container-level mt-[1.5rem]">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Zona
+							</span>
+							<div class="flex">
+								<select
+									name="zone"
+									id="zone"
+									required
+									class="selection-zone w-full mt-2 flex justify-between items-center self-stretch bg-transparent border-2 p-4 rounded-lg border-solid border-[#EDEDED] text-[#121212] text-sm not-italic font-semibold leading-[140%] font-JKTSans"
+								>
+									<option selected disabled class="font-semibold"> Pilih Zona </option>
+									{#each data.zone as { id_zona, nama_zona }, idx}
+										<option value={id_zona} class="font-semibold"> {nama_zona}</option>
+									{/each}
+								</select>
+							</div>
+						</div>
+						<div class="container-level mt-[1.5rem] w-full">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Pesan
+							</span>
+							<div class="flex">
+								<textarea
+									name="message"
+									id="message"
+									rows="5"
+									required
+									placeholder="Masukkan pesan anda"
+									class="w-full max-h-52 overflow-auto flex justify-center items-start gap-[2.1875rem] border p-3 rounded-[0.625rem] border-solid border-[#EFEFEF] font-JKTSans resize-none"
+								/>
+							</div>
+						</div>
+						<div class="flex w-full justify-center mt-10">
+							<button
+								class="button w-fit inline-flex justify-center items-center gap-2 px-6 py-3 rounded-[0.3125rem] bg-[#048F7B] text-white"
+								type="submit"
+							>
+								Kirim Laporan
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	{/if}
+	{#if modalLaporan.target == 'detailLP' && modalLaporan.show}
+		<div class="opacity-0" style="display: none;">
+			{setTimeout(() => {
+				if (document.getElementById('card-modal-detail')?.classList.contains('scale-0'))
+					document.getElementById('card-modal-detail')?.classList.toggle('scale-0');
+				if (document.getElementById('card-modal-detail')?.classList.contains('scale-100'))
+					document.getElementById('card-modal-detail')?.classList.toggle('scale-100');
+			}, 1)}
+		</div>
+		<div
+			class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}"
+			id="card-modal-detail"
+		>
+			<div
+				class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
+				id="modal-detail"
+			>
+				<div class="flex justify-between mx-5 mb-4">
+					<p class="text-[#121212] text-xl font-semibold">Detail Laporan</p>
+
+					<button
+						class="btn"
+						on:click={() => {
+							modalLaporan = { show: false, target: null };
+						}}><img src={x} alt="close" /></button
+					>
+				</div>
+
+				<div class="flex flex-col p-6 gap-5 overflow-auto max-h-96">
+					<div class="flex">
+						<img src={profile} alt="profile" class="p-2 bg-[#F5F5F5] rounded-full" />
+
+						<div class="flex flex-col">
+							<p class="text-sm text-[#121212] font-semibold">
+								{selectedLP.nama.length > 2
+									? selectedLP.nama.charAt(0) +
+									  '*'.repeat(selectedLP.nama.length - 2) +
+									  selectedLP.nama.substring(selectedLP.nama.length - 1)
+									: selectedLP.nama}
+							</p>
+							<p class="text-xs text-black text-opacity-40 font-normal">
+								{new Date(selectedLP.created_at * 1000).toLocaleDateString()}
+							</p>
+						</div>
+					</div>
+					<hr />
+
+					<span class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
+						>{selectedLP.kategori}</span
+					>
+
+					<p class="text-black text-opacity-70 text-justify max-h-40 overflow-auto">
+						{selectedLP.pesan}
+					</p>
+				</div>
+
+				<p class="text-[#121212] text-2xl font-medium mx-5 mb-5">Respon</p>
+				{#if selectedLP.namaAdmin != null}
+					<div class="w-full mb-5">
+						<div class="flex gap-4 align-baseline mx-6 mb-4">
+							<img src={admin} alt="admin.png" class="w-12 h-12" />
+							<svg
+								viewBox="0 0 16 16"
+								xmlns="http://www.w3.org/2000/svg"
+								class="fill-current w-5 absolute stroke-white bottom-[8.75rem] left-[5.5rem]"
+							>
+								<path
+									d="M14.3733 7.16012L13.4667 6.10679C13.2933 5.90679 13.1533 5.53345 13.1533 5.26679V4.13345C13.1533 3.42679 12.5733 2.84679 11.8667 2.84679H10.7333C10.4733 2.84679 10.0933 2.70679 9.89334 2.53345L8.84 1.62679C8.38 1.23345 7.62667 1.23345 7.16 1.62679L6.11334 2.54012C5.91334 2.70679 5.53334 2.84679 5.27334 2.84679H4.12C3.41334 2.84679 2.83334 3.42679 2.83334 4.13345V5.27345C2.83334 5.53345 2.69334 5.90679 2.52667 6.10679L1.62667 7.16679C1.24 7.62679 1.24 8.37345 1.62667 8.83345L2.52667 9.89345C2.69334 10.0935 2.83334 10.4668 2.83334 10.7268V11.8668C2.83334 12.5735 3.41334 13.1535 4.12 13.1535H5.27334C5.53334 13.1535 5.91334 13.2935 6.11334 13.4668L7.16667 14.3735C7.62667 14.7668 8.38 14.7668 8.84667 14.3735L9.9 13.4668C10.1 13.2935 10.4733 13.1535 10.74 13.1535H11.8733C12.58 13.1535 13.16 12.5735 13.16 11.8668V10.7335C13.16 10.4735 13.3 10.0935 13.4733 9.89345L14.38 8.84012C14.7667 8.38012 14.7667 7.62012 14.3733 7.16012ZM10.7733 6.74012L7.55334 9.96012C7.46 10.0535 7.33334 10.1068 7.2 10.1068C7.06667 10.1068 6.94 10.0535 6.84667 9.96012L5.23334 8.34679C5.04 8.15345 5.04 7.83345 5.23334 7.64012C5.42667 7.44679 5.74667 7.44679 5.94 7.64012L7.2 8.90012L10.0667 6.03345C10.26 5.84012 10.58 5.84012 10.7733 6.03345C10.9667 6.22679 10.9667 6.54679 10.7733 6.74012Z"
+									fill="#0071FF"
+								/>
+							</svg>
+							<!-- {console.log(namaAdmin)} -->
+							<div class="flex flex-col h-full gap-2">
+								<span class="text-[#121212] font-[600] text-sm">{selectedLP.namaAdmin}</span>
+								<span class="font-medium text-xs text-black text-opacity-40"
+									>{new Date(selectedLP.answered_at * 1000).toLocaleDateString()}</span
+								>
+							</div>
+						</div>
+						<p class="text-black text-opacity-70 text-justify mx-6">
+							{selectedLP.jawaban}
+						</p>
+					</div>
+				{:else}
+					<div class="w-full flex justify-center align-middle mb-5">
+						<div class="w-full">
+							<div class="flex w-full justify-center">
+								<PersonExamine />
+							</div>
+							<div class="w-full flex">
+								<span class="w-full h-full text-center">
+									Belum ada respon, laporan anda masih diproses oleh admin
+								</span>
+							</div>
+						</div>
+					</div>
+				{/if}
+				<div class="flex w-full justify-center mt-10 gap-5">
+					<button
+						class="flex justify-center items-center gap-2 text-[#E14942] text-center text-sm not-italic font-semibold leading-normal px-6 py-3 font-JKTSans rounded-[0.3125rem] border border-[#d73e36]"
+						type="submit"
+					>
+						Hapus Laporan
+					</button>
+					<button
+						class="button w-fit inline-flex justify-center items-center gap-2 px-6 py-3 rounded-[0.3125rem] bg-[#048F7B] text-white"
+						type="submit"
+					>
+						Edit Laporan
+					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+	{#if modalLaporan.target == 'updateLP' && modalLaporan.show}
+		<div class="opacity-0" style="display: none;">
+			{setTimeout(() => {
+				if (document.getElementById('card-modal-update')?.classList.contains('scale-0'))
+					document.getElementById('card-modal-update')?.classList.toggle('scale-0');
+				if (document.getElementById('card-modal-update')?.classList.contains('scale-100'))
+					document.getElementById('card-modal-update')?.classList.toggle('scale-100');
+			}, 100)}
+		</div>
+		<div
+			class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}"
+			id="card-modal-update"
+		>
+			<div
+				class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
+				id="modal-detail"
+			>
+				<div class="flex justify-between mx-5 mb-4">
+					<p class="text-[#121212] text-xl font-semibold">Edit Laporan</p>
+
+					<button
+						class="btn"
+						on:click={() => {
+							modalLaporan = { show: false, target: null };
+						}}><img src={x} alt="close" /></button
+					>
+				</div>
+				<form
+					method="post"
+					class="w-full h-full flex justify-center align-middle"
+					use:enhance
+					action="?/update"
+					on:submit={() => ({ show: false, target: null })}
+				>
+					<div class="form-contain">
+						<div class="container-category">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Kategori
+							</span>
+							<input
+								type="text"
+								name="id_laporan"
+								id="id_laporan"
+								readonly
+								style="display: none;"
+								value={selectedLP.id_laporan}
+							/>
+							<div class="flex gap-2">
+								{#each data.category as { id_kategori, nama_kategori }, idx}
+									<label
+										class="label-category peer-checked:border-blue-600 peer-checked:text-blue-600"
+									>
+										<input
+											type="radio"
+											name="category"
+											class="radio-in"
+											required
+											value={id_kategori}
+											id={nama_kategori}
+											checked={selectedLP.kategori == nama_kategori ? true : false}
+										/>
+										<span class="radio-text">
+											{nama_kategori}
+										</span>
+									</label>
+								{/each}
+							</div>
+						</div>
+						<div class="container-level mt-[1.5rem] gap-2">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Urgensi
+							</span>
+							<div class="flex gap-2">
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										value="1"
+										required
+										id="low"
+										checked={selectedLP.urgensi.toString() == '1' ? true : false}
+									/>
+									<span class="radio-text"> Low </span>
+								</label>
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										required
+										value="2"
+										id="intermediate"
+										checked={selectedLP.urgensi.toString() == '2' ? true : false}
+									/>
+									<span class="radio-text"> Intermediate </span>
+								</label>
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										required
+										value="3"
+										id="high"
+										checked={selectedLP.urgensi.toString() == '3' ? true : false}
+									/>
+									<span class="radio-text"> High </span>
+								</label>
+								<label class="label-category">
+									<input
+										type="radio"
+										name="urgentstate"
+										class="radio-in"
+										required
+										value="4"
+										id="urgent"
+										checked={selectedLP.urgensi.toString() == '4' ? true : false}
+									/>
+									<span class="radio-text"> Urgent </span>
+								</label>
+							</div>
+						</div>
+						<div class="container-level mt-[1.5rem]">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Zona
+							</span>
+							<div class="flex">
+								<select
+									name="zone"
+									id="zone"
+									required
+									class="selection-zone w-full mt-2 flex justify-between items-center self-stretch bg-transparent border-2 p-4 rounded-lg border-solid border-[#EDEDED] text-[#121212] text-sm not-italic font-semibold leading-[140%] font-JKTSans"
+								>
+									<option selected disabled class="font-semibold"> Pilih Zona </option>
+									{#each data.zone as { id_zona, nama_zona }, idx}
+										<option
+											value={id_zona}
+											class="font-semibold"
+											selected={selectedLP.nama_zona == nama_zona ? true : false}
+										>
+											{nama_zona}</option
+										>
+									{/each}
+								</select>
+							</div>
+						</div>
+						<div class="container-level mt-[1.5rem] w-full">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								Pesan
+							</span>
+							<div class="flex">
+								<textarea
+									name="message"
+									id="message"
+									rows="5"
+									required
+									placeholder="Masukkan pesan anda"
+									class="w-full max-h-52 overflow-auto flex justify-center items-start gap-[2.1875rem] border p-3 rounded-[0.625rem] border-solid border-[#EFEFEF] font-JKTSans resize-none"
+									>{selectedLP.pesan}</textarea
+								>
+							</div>
+						</div>
+						<div class="container-level mt-[1.5rem] w-full">
+							<span class="text-[#121212] text-lg not-italic font-semibold leading-[normal]">
+								NIM Pembuat
+							</span>
+							<input
+								type="text"
+								name="nim"
+								id="nim"
+								class="w-full max-h-52 overflow-auto flex justify-center items-start gap-[2.1875rem] border p-3 rounded-[0.625rem] border-solid border-[#EFEFEF] font-JKTSans resize-none read-only:bg-slate-300 read-only:text-slate-600"
+								readonly
+								value={selectedLP.nim}
+							/>
+						</div>
+						<div class="flex w-full justify-center mt-10">
+							<button
+								class="button w-fit inline-flex justify-center items-center gap-2 px-6 py-3 rounded-[0.3125rem] bg-[#048F7B] text-white"
+								type="submit"
+							>
+								Simpan
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	{/if}
+	{#if modalLaporan.target == 'deleteLP' && modalLaporan.show}
+		<div class="opacity-0" style="display: none;">
+			{setTimeout(() => {
+				if (document.getElementById('card-modal-delete')?.classList.contains('scale-0'))
+					document.getElementById('card-modal-delete')?.classList.toggle('scale-0');
+				if (document.getElementById('card-modal-delete')?.classList.contains('scale-100'))
+					document.getElementById('card-modal-delete')?.classList.toggle('scale-100');
+			}, 100)}
+		</div>
+		<div
+			class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}"
+			id="card-modal-delete"
+		>
+			<div
+				class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
+				id="modal-detail"
+			>
+				<div class="flex justify-between mx-5 mb-4">
+					<p class="text-[#121212] text-xl font-semibold">Delete Laporan</p>
+
+					<button
+						class="btn"
+						on:click={() => {
+							modalLaporan = { show: false, target: null };
+						}}><img src={x} alt="close" /></button
+					>
+				</div>
+				<form
+					method="post"
+					class="w-full h-full flex justify-center align-middle mx-5"
+					use:enhance
+					action="?/delete"
+					on:submit={() => (modalLaporan = { show: false, target: null })}
+				>
+					<div class="form-contain w-full">
+						<div class="flex flex-col p-6 gap-5 overflow-auto max-h-96">
+							<div class="flex">
+								<img
+									src={profile}
+									alt="profile"
+									class="p-2 bg-[#F5F5F5] rounded-full w-20 border-none"
+								/>
+
+								<div class="flex flex-col">
+									<p
+										class="text-[#121212] max-w-lg:text-lg text-sm not-italic font-bold leading-[normal] font-JKTSans"
+									>
+										{selectedLP.nama}
+									</p>
+									<p
+										class="text-[rgba(18,18,18,0.60)] max-w-lg:text-md text-xs not-italic font-normal leading-[normal] font-JKTSans"
+									>
+										{new Date(selectedLP.created_at * 1000).toLocaleDateString()}
+									</p>
+								</div>
+							</div>
+							<hr />
+
+							<div class="flex w-full gap-5 justify-start">
+								<span
+									class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
+								>
+									Kategori: {selectedLP.kategori}
+								</span>
+								<span
+									class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
+								>
+									Urgensi:{selectedLP.urgensi == 1
+										? 'Low'
+										: selectedLP.urgensi == 2
+										? 'Intermediate'
+										: selectedLP.urgensi == 3
+										? 'High'
+										: 'Urgent'}
+								</span>
+								<span
+									class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
+								>
+									Kategori: {selectedLP.nama_zona}
+								</span>
+							</div>
+
+							<p class="text-black text-opacity-70 text-justify max-h-40 overflow-auto">
+								{selectedLP.pesan}
+							</p>
+						</div>
+						<div class="container-category">
+							<input
+								type="text"
+								name="id_laporan"
+								id="id_laporan"
+								readonly
+								style="display: none;"
+								value={selectedLP.id_laporan}
+							/>
+						</div>
+						<div class="flex w-full justify-center mt-10 gap-5">
+							<button
+								class="flex justify-center items-center gap-2 border-2 text-[#121212] text-center text-sm not-italic font-semibold leading-[normal] px-6 py-3 rounded-[0.3125rem] border-solid border-[#EDEDED]"
+								type="submit"
+							>
+								Batal
+							</button>
+							<button
+								class="flex justify-center items-center gap-2 text-white bg-[#E14942] text-center text-sm not-italic font-bold leading-normal px-6 py-3 font-JKTSans rounded-[0.3125rem] border border-transparent"
+								type="submit"
+							>
+								Hapus Laporan
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style lang="postcss">
