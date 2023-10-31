@@ -298,7 +298,6 @@
 						</div>
 						<div class="grid grid-cols-3 gap-4">
 							{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin }, index}
-								<!-- <span>{kategori}</span> -->
 								{#if searchValue !== null && new String(kategori)
 										.toLowerCase()
 										.includes(searchValue)}
@@ -754,13 +753,11 @@
 
 															<div class="flex flex-col">
 																<p class="text-sm text-[#121212] font-semibold">
-																	{selectedLP.nama > 4
+																	{selectedLP.nama.length > 2
 																		? selectedLP.nama.charAt(0) +
 																		  '*'.repeat(selectedLP.nama.length - 2) +
 																		  selectedLP.nama.substring(selectedLP.nama.length - 1)
-																		: selectedLP.nama.length == 1
-																		? selectedLP.nama
-																		: selectedLP.nama.charAt(0) + '*'}
+																		: selectedLP.nama}
 																</p>
 																<p class="text-xs text-black text-opacity-40 font-normal">
 																	{new Date(created_at * 1000).toLocaleDateString()}
