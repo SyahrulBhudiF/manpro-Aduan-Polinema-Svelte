@@ -2,6 +2,7 @@
 	import profile from '$lib/Assets/profile.png';
 	import arrow from '$lib/Assets/arrow-down.svg';
 	import questionPict from '$lib/Assets/user-octagon.svg';
+	import PersonExamine from '$lib/Assets/PersonExamine.svelte';
 
 	import { onMount } from 'svelte';
 	import ec1 from '$lib/Assets/Ellipse-4.svg';
@@ -22,8 +23,13 @@
 	let isLaporanClicked: boolean = false;
 	let activeIndex: number = 0;
 	let isModalOpen: boolean = false;
-	let selectedUserId: number | null = null;
-	let modalLaporan = false;
+	let selectedUserId: number;
+	let modalLaporan: { target: any | null; show: boolean } = { target: null, show: false };
+
+	let selectedLP: any | null = null;
+
+	let searchValue: string | null = null;
+	let searchEl: HTMLInputElement | null = null;
 
 	let open = false;
 
@@ -39,6 +45,11 @@
 		if (formData?.isErr) open = true;
 	};
 
+	const searchTextChange = (component: HTMLInputElement | null): void => {
+		// console.log(component?.value);
+		searchValue = component?.value != undefined ? component?.value : null;
+	};
+
 	if (formData != null || formData != undefined) formCompleteTrigger();
 
 	function handleBerandaClick() {
@@ -51,13 +62,23 @@
 		isLaporanClicked = true;
 	}
 
-	const triggerForm = () => {
+	const triggerForm = (target: string): void => {
 		isBerandaClicked = false;
 		isLaporanClicked = true;
 
 		setTimeout(() => {
-			modalLaporan = true;
+			modalLaporan = { show: true, target: target };
 		}, 200);
+	};
+
+	const openForm = (target: string): void => {
+		modalLaporan = { show: true, target: target };
+	};
+
+	const openDetailLP = (userId: number) => {
+		data.content.map((value: any) => {
+			if (value.id_laporan == userId) selectedLP = value;
+		});
 	};
 
 	function handleClickLi(index: number) {
@@ -77,34 +98,67 @@
 		isBerandaClicked = true;
 		isLaporanClicked = false;
 	});
+
+	if (form != null) {
+		setTimeout(() => {
+			form = null;
+		}, 10000);
+	}
 </script>
 
-<!-- <Modal
-	passiveModal
-	bind:open
-	modalHeading={formData?.errMessage ? 'ERROR' : 'Information'}
-	class="bg-white"
-	danger
-	on:open
-	on:close
->
-	<h4 class="text-white text-center">
-		{#if formData?.errMessage}
-			{formData?.errMessage}
-		{:else}
-			<span class="text-green-500"> Laporan berhasil dibuat </span>
-		{/if}
-	</h4>
-</Modal> -->
-<div class={isModalOpen || modalLaporan ? 'overflow-hidden max-h-screen' : ''}>
+{#if form != null}
+	<div
+		class="fixed flex flex-col p-2 bg-white shadow-md hover:shodow-lg rounded-2xl h-20 mt-5 mr-5 right-0"
+	>
+		<div class="flex items-center justify-between">
+			<div class="flex items-center">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="w-16 h-16 rounded-2xl p-3 border border-blue-100 text-blue-400 bg-blue-50"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					/>
+				</svg>
+				<div class="flex flex-col ml-3">
+					<div class="font-medium leading-none">
+						{form?.isErr ? 'Error' : 'Info'}
+					</div>
+					<p class="text-sm text-gray-600 leading-none mt-1">
+						{form?.content}
+					</p>
+				</div>
+			</div>
+			<button
+				class="flex-no-shrink bg-red-500 px-1 ml-4 py-1 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full"
+				on:click={() => (form = null)}
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" class="fill-current w-5" viewBox="0 0 24 24"
+					><path
+						d="M9.172 16.242 12 13.414l2.828 2.828 1.414-1.414L13.414 12l2.828-2.828-1.414-1.414L12 10.586 9.172 7.758 7.758 9.172 10.586 12l-2.828 2.828z"
+					/><path
+						d="M12 22c5.514 0 10-4.486 10-10S17.514 2 12 2 2 6.486 2 12s4.486 10 10 10zm0-18c4.411 0 8 3.589 8 8s-3.589 8-8 8-8-3.589-8-8 3.589-8 8-8z"
+					/></svg
+				>
+			</button>
+		</div>
+	</div>
+{/if}
+<div class={isModalOpen || modalLaporan.show ? 'overflow-hidden max-h-screen' : ''}>
 	<nav class="nav bg-[#364150] {isModalOpen ? 'blur' : ''}">
 		<h1 class="text-white textLogo">ADUAN <span class="text-[#00C7FF]">POLINEMA</span></h1>
 		<div class="flex gap-4 align-baseline cursor-pointer">
 			<img src={profile} alt="profile.png" />
 			{#if data.user != null}
 				<div class="flex flex-col">
-					<span class="text-white font-[600] text-sm">{data.user.username}</span>
-					<span class="font-medium text-xs text-[#FFFFFF99]">{data.user.nim}</span>
+					<span class="text-white font-[600] text-sm">{data.user.name}</span>
+					<span class="font-medium text-xs text-[#FFFFFF99]">{data.user.id}</span>
 				</div>
 				<img src={arrow} alt="arrow" class="w-6 h-6 cursor-pointer" />
 			{/if}
@@ -204,8 +258,8 @@
 									role="button"
 									tabindex="0"
 									class="bg-[#048f7b] px-6 py-3 w-fit text-white rounded-md active:opacity-80"
-									on:click={handleLaporanClick}
-									on:keydown={handleLaporanClick}
+									on:click={() => triggerForm('createLP')}
+									on:keydown
 								>
 									Buat Laporan</span
 								>
@@ -236,6 +290,8 @@
 									id="search"
 									placeholder="Cari berdasarkan kata"
 									class="outline-none"
+									bind:this={searchEl}
+									on:input={(event) => searchTextChange(event.currentTarget)}
 								/>
 								<img src={search} alt="search" />
 							</div>
@@ -243,7 +299,9 @@
 						<div class="grid grid-cols-3 gap-4">
 							{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin }, index}
 								<!-- <span>{kategori}</span> -->
-								{#if kategori === laporanItems[activeIndex].name}
+								{#if searchValue !== null && new String(kategori)
+										.toLowerCase()
+										.includes(searchValue)}
 									<Card
 										id={id_laporan}
 										profile={questionPict}
@@ -254,7 +312,18 @@
 										urgentState={Number.parseInt(urgensi)}
 										{openModal}
 									/>
-								{:else if activeIndex === 0}
+								{:else if kategori === laporanItems[activeIndex].name && (searchValue === null || searchValue === '')}
+									<Card
+										id={id_laporan}
+										profile={questionPict}
+										name={nama}
+										date={new Date(created_at * 1000).toLocaleDateString()}
+										category={kategori}
+										text={pesan}
+										urgentState={Number.parseInt(urgensi)}
+										{openModal}
+									/>
+								{:else if activeIndex === 0 && (searchValue === null || searchValue === '')}
 									<Card
 										id={id_laporan}
 										profile={questionPict}
@@ -273,7 +342,7 @@
 											document.getElementById('modal-detail')?.classList.toggle('scale-100');
 										}, 1)}
 									</div>
-									<div class="card-modal" style="backdrop-filter: blur(5px);">
+									<div class="card-modal" id="card-modal" style="backdrop-filter: blur(5px);">
 										<div
 											class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center scale-0 max-h-1/2 blur-none"
 											id="modal-detail"
@@ -295,7 +364,15 @@
 													/>
 
 													<div class="flex flex-col">
-														<p class="text-sm text-[#121212] font-semibold">{nama}</p>
+														<p class="text-sm text-[#121212] font-semibold">
+															{nama.length > 4
+																? nama.charAt(0) +
+																  '*'.repeat(nama.length - 2) +
+																  nama.substring(nama.length - 1)
+																: nama.length == 1
+																? nama
+																: nama.charAt(0) + '*'}
+														</p>
 														<p class="text-xs text-black text-opacity-40 font-normal">
 															{new Date(created_at * 1000).toLocaleDateString()}
 														</p>
@@ -316,14 +393,26 @@
 											{#if namaAdmin != null}
 												<p class="text-[#121212] text-xl font-semibold mx-5 mb-5">Respon</p>
 
-												<div class="flex gap-4 align-baseline mx-6 mb-4">
-													<img src={admin} alt="admin.png" class="w-9" />
-													<!-- {console.log(namaAdmin)} -->
-													<div class="flex flex-col">
-														<span class="text-[#121212] font-[600] text-sm">{namaAdmin}</span>
-														<span class="font-medium text-xs text-black text-opacity-40"
-															>{new Date(answered_at * 1000).toLocaleDateString()}</span
+												<div class="w-full">
+													<div class="flex gap-4 align-baseline mx-6 mb-4">
+														<img src={admin} alt="admin.png" class="w-12 h-12" />
+														<svg
+															viewBox="0 0 16 16"
+															xmlns="http://www.w3.org/2000/svg"
+															class="fill-current w-5 absolute stroke-white bottom-[8.75rem] left-[5.5rem]"
 														>
+															<path
+																d="M14.3733 7.16012L13.4667 6.10679C13.2933 5.90679 13.1533 5.53345 13.1533 5.26679V4.13345C13.1533 3.42679 12.5733 2.84679 11.8667 2.84679H10.7333C10.4733 2.84679 10.0933 2.70679 9.89334 2.53345L8.84 1.62679C8.38 1.23345 7.62667 1.23345 7.16 1.62679L6.11334 2.54012C5.91334 2.70679 5.53334 2.84679 5.27334 2.84679H4.12C3.41334 2.84679 2.83334 3.42679 2.83334 4.13345V5.27345C2.83334 5.53345 2.69334 5.90679 2.52667 6.10679L1.62667 7.16679C1.24 7.62679 1.24 8.37345 1.62667 8.83345L2.52667 9.89345C2.69334 10.0935 2.83334 10.4668 2.83334 10.7268V11.8668C2.83334 12.5735 3.41334 13.1535 4.12 13.1535H5.27334C5.53334 13.1535 5.91334 13.2935 6.11334 13.4668L7.16667 14.3735C7.62667 14.7668 8.38 14.7668 8.84667 14.3735L9.9 13.4668C10.1 13.2935 10.4733 13.1535 10.74 13.1535H11.8733C12.58 13.1535 13.16 12.5735 13.16 11.8668V10.7335C13.16 10.4735 13.3 10.0935 13.4733 9.89345L14.38 8.84012C14.7667 8.38012 14.7667 7.62012 14.3733 7.16012ZM10.7733 6.74012L7.55334 9.96012C7.46 10.0535 7.33334 10.1068 7.2 10.1068C7.06667 10.1068 6.94 10.0535 6.84667 9.96012L5.23334 8.34679C5.04 8.15345 5.04 7.83345 5.23334 7.64012C5.42667 7.44679 5.74667 7.44679 5.94 7.64012L7.2 8.90012L10.0667 6.03345C10.26 5.84012 10.58 5.84012 10.7733 6.03345C10.9667 6.22679 10.9667 6.54679 10.7733 6.74012Z"
+																fill="#0071FF"
+															/>
+														</svg>
+														<!-- {console.log(namaAdmin)} -->
+														<div class="flex flex-col h-full gap-2">
+															<span class="text-[#121212] font-[600] text-sm">{namaAdmin}</span>
+															<span class="font-medium text-xs text-black text-opacity-40"
+																>{new Date(answered_at * 1000).toLocaleDateString()}</span
+															>
+														</div>
 													</div>
 													<p class="text-black text-opacity-70 text-justify mx-6">{jawaban}</p>
 												</div>
@@ -343,7 +432,7 @@
 								tabindex="0"
 								class="button active:opacity-80 bg-[#048F7B] text-white"
 								on:click={() => {
-									modalLaporan = true;
+									openForm('createLP');
 								}}
 								on:keydown
 							>
@@ -373,7 +462,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin }, index}
+									{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin, nama_zona }, index}
 										<tr class="w-full text-center h-14 border-b-2 border-slate-200">
 											<td>
 												{new Date(created_at * 1000).toLocaleDateString()}
@@ -406,36 +495,62 @@
 												</span>
 											</td>
 											<td>
-												<span class="col-pesan font-JKTSans font-semibold"> ZONA </span>
+												<span class="col-pesan font-JKTSans font-semibold">
+													{nama_zona}
+												</span>
 											</td>
 											<td>
 												{status == 0 ? 'Belum direspon' : 'Telah direspon'}
 											</td>
-											<td>
-												<span class="w-full h-full" role="button">
-													<span class="col-pesan">
+											<td class="relative group">
+												<span class="w-full h-full flex justify-end" role="button">
+													<button class="col-pesan w-fit h-full">
 														<svg
 															xmlns="http://www.w3.org/2000/svg"
 															viewBox="0 0 24 24"
-															class="fill-current w-10"
+															class="fill-current w-7"
 															><path
 																d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
 															/></svg
 														>
-													</span>
+													</button>
 												</span>
+												<div
+													class="inline-flex flex-col items-start gap-2 p-4 absolute scale-0 group-hover:scale-100 border shadow-[0px_10px_32px_0px_rgba(18,18,18,0.10)] rounded-lg border-solid border-[#EDEDED] bg-[#fff] right-2 z-50"
+												>
+													<button
+														class="border-b-[1px] w-full pb-2 hover:text-[#00b4e6]"
+														on:click={() => {
+															openDetailLP(id_laporan);
+															openForm('detailLP');
+														}}>Detail</button
+													>
+
+													<button class="border-b-[1px] w-full pb-2 hover:text-[#00b4e6]"
+														>Edit</button
+													>
+
+													<button> <span class="text-[#E14942] w-full"> Delete </span> </button>
+												</div>
 											</td>
 										</tr>
-										{#if modalLaporan}
-											<div class="opacity-0">
+										{#if modalLaporan.target == 'createLP' && modalLaporan.show}
+											<div class="opacity-0" style="display: none;">
 												{setTimeout(() => {
-													document.getElementById('modal-detail')?.classList.toggle('scale-0');
-													document.getElementById('modal-detail')?.classList.toggle('scale-100');
+													if (document.getElementById('card-modal')?.classList.contains('scale-0'))
+														document.getElementById('card-modal')?.classList.toggle('scale-0');
+													if (
+														document.getElementById('card-modal')?.classList.contains('scale-100')
+													)
+														document.getElementById('card-modal')?.classList.toggle('scale-100');
 												}, 1)}
 											</div>
-											<div class="card-modal">
+											<div
+												class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}"
+												id="card-modal"
+											>
 												<div
-													class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center scale-0"
+													class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
 													id="modal-detail"
 												>
 													<div class="flex justify-between mx-5 mb-4">
@@ -444,7 +559,7 @@
 														<button
 															class="btn"
 															on:click={() => {
-																modalLaporan = false;
+																modalLaporan = { show: false, target: null };
 															}}><img src={x} alt="close" /></button
 														>
 													</div>
@@ -452,9 +567,9 @@
 														method="post"
 														class="w-full h-full flex justify-center align-middle"
 														use:enhance
-														action="/api/laporan"
+														action="?/create"
+														on:submit={() => ({ show: false, target: null })}
 													>
-														<!-- on:submit|preventDefault -->
 														<div class="form-contain">
 															<div class="container-category">
 																<span
@@ -586,6 +701,145 @@
 															</div>
 														</div>
 													</form>
+												</div>
+											</div>
+										{/if}
+										{#if modalLaporan.target == 'detailLP' && modalLaporan.show}
+											<div class="opacity-0" style="display: none;">
+												{setTimeout(() => {
+													if (
+														document
+															.getElementById('card-modal-detail')
+															?.classList.contains('scale-0')
+													)
+														document
+															.getElementById('card-modal-detail')
+															?.classList.toggle('scale-0');
+													if (
+														document
+															.getElementById('card-modal-detail')
+															?.classList.contains('scale-100')
+													)
+														document
+															.getElementById('card-modal-detail')
+															?.classList.toggle('scale-100');
+												}, 1)}
+											</div>
+											<div
+												class="card-modal scale-0 {modalLaporan.show ? 'backdrop-blur' : ''}"
+												id="card-modal-detail"
+											>
+												<div
+													class="flex flex-col justify-center align-middle bg-white p-8 w-[40%] rounded-xl transition-all duration-100 ease-in origin-center"
+													id="modal-detail"
+												>
+													<div class="flex justify-between mx-5 mb-4">
+														<p class="text-[#121212] text-xl font-semibold">Detail Laporan</p>
+
+														<button
+															class="btn"
+															on:click={() => {
+																modalLaporan = { show: false, target: null };
+															}}><img src={x} alt="close" /></button
+														>
+													</div>
+
+													<div class="flex flex-col p-6 gap-5 overflow-auto max-h-96">
+														<div class="flex">
+															<img
+																src={profile}
+																alt="profile"
+																class="p-2 bg-[#F5F5F5] rounded-full"
+															/>
+
+															<div class="flex flex-col">
+																<p class="text-sm text-[#121212] font-semibold">
+																	{selectedLP.nama > 4
+																		? selectedLP.nama.charAt(0) +
+																		  '*'.repeat(selectedLP.nama.length - 2) +
+																		  selectedLP.nama.substring(selectedLP.nama.length - 1)
+																		: selectedLP.nama.length == 1
+																		? selectedLP.nama
+																		: selectedLP.nama.charAt(0) + '*'}
+																</p>
+																<p class="text-xs text-black text-opacity-40 font-normal">
+																	{new Date(created_at * 1000).toLocaleDateString()}
+																</p>
+															</div>
+														</div>
+														<hr />
+
+														<span
+															class="p-2 bg-[#F5F5F5] rounded-md w-fit font-semibold text-xs text-[#121212]"
+															>{selectedLP.kategori}</span
+														>
+
+														<p
+															class="text-black text-opacity-70 text-justify max-h-40 overflow-auto"
+														>
+															{selectedLP.pesan}
+														</p>
+													</div>
+
+													<p class="text-[#121212] text-2xl font-medium mx-5 mb-5">Respon</p>
+													{#if selectedLP.namaAdmin != null}
+														<div class="w-full mb-5">
+															<div class="flex gap-4 align-baseline mx-6 mb-4">
+																<img src={admin} alt="admin.png" class="w-12 h-12" />
+																<svg
+																	viewBox="0 0 16 16"
+																	xmlns="http://www.w3.org/2000/svg"
+																	class="fill-current w-5 absolute stroke-white bottom-[8.75rem] left-[5.5rem]"
+																>
+																	<path
+																		d="M14.3733 7.16012L13.4667 6.10679C13.2933 5.90679 13.1533 5.53345 13.1533 5.26679V4.13345C13.1533 3.42679 12.5733 2.84679 11.8667 2.84679H10.7333C10.4733 2.84679 10.0933 2.70679 9.89334 2.53345L8.84 1.62679C8.38 1.23345 7.62667 1.23345 7.16 1.62679L6.11334 2.54012C5.91334 2.70679 5.53334 2.84679 5.27334 2.84679H4.12C3.41334 2.84679 2.83334 3.42679 2.83334 4.13345V5.27345C2.83334 5.53345 2.69334 5.90679 2.52667 6.10679L1.62667 7.16679C1.24 7.62679 1.24 8.37345 1.62667 8.83345L2.52667 9.89345C2.69334 10.0935 2.83334 10.4668 2.83334 10.7268V11.8668C2.83334 12.5735 3.41334 13.1535 4.12 13.1535H5.27334C5.53334 13.1535 5.91334 13.2935 6.11334 13.4668L7.16667 14.3735C7.62667 14.7668 8.38 14.7668 8.84667 14.3735L9.9 13.4668C10.1 13.2935 10.4733 13.1535 10.74 13.1535H11.8733C12.58 13.1535 13.16 12.5735 13.16 11.8668V10.7335C13.16 10.4735 13.3 10.0935 13.4733 9.89345L14.38 8.84012C14.7667 8.38012 14.7667 7.62012 14.3733 7.16012ZM10.7733 6.74012L7.55334 9.96012C7.46 10.0535 7.33334 10.1068 7.2 10.1068C7.06667 10.1068 6.94 10.0535 6.84667 9.96012L5.23334 8.34679C5.04 8.15345 5.04 7.83345 5.23334 7.64012C5.42667 7.44679 5.74667 7.44679 5.94 7.64012L7.2 8.90012L10.0667 6.03345C10.26 5.84012 10.58 5.84012 10.7733 6.03345C10.9667 6.22679 10.9667 6.54679 10.7733 6.74012Z"
+																		fill="#0071FF"
+																	/>
+																</svg>
+																<!-- {console.log(namaAdmin)} -->
+																<div class="flex flex-col h-full gap-2">
+																	<span class="text-[#121212] font-[600] text-sm"
+																		>{selectedLP.namaAdmin}</span
+																	>
+																	<span class="font-medium text-xs text-black text-opacity-40"
+																		>{new Date(
+																			selectedLP.answered_at * 1000
+																		).toLocaleDateString()}</span
+																	>
+																</div>
+															</div>
+															<p class="text-black text-opacity-70 text-justify mx-6">
+																{selectedLP.jawaban}
+															</p>
+														</div>
+													{:else}
+														<div class="w-full flex justify-center align-middle mb-5">
+															<div class="w-full">
+																<div class="flex w-full justify-center">
+																	<PersonExamine />
+																</div>
+																<div class="w-full flex">
+																	<span class="w-full h-full text-center">
+																		Belum ada respon, laporan anda masih diproses oleh admin
+																	</span>
+																</div>
+															</div>
+														</div>
+													{/if}
+													<div class="flex w-full justify-center mt-10 gap-5">
+														<button
+															class="flex justify-center items-center gap-2 text-[#E14942] text-center text-sm not-italic font-semibold leading-normal px-6 py-3 font-JKTSans rounded-[0.3125rem] border border-[#d73e36]"
+															type="submit"
+														>
+															Hapus Laporan
+														</button>
+														<button
+															class="button w-fit inline-flex justify-center items-center gap-2 px-6 py-3 rounded-[0.3125rem] bg-[#048F7B] text-white"
+															type="submit"
+														>
+															Edit Laporan
+														</button>
+													</div>
 												</div>
 											</div>
 										{/if}

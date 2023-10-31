@@ -9,30 +9,29 @@ export const load = async ({ locals }) => {
 export const actions = {
 	login: async ({ request, fetch, cookies }) => {
 		const data = await request.formData();
-		const nim = data.get('nim');
+		const username = data.get('username');
 		const password = data.get('password');
 
-		if (nim == null) return { isErr: true, errContnet: 'NIM should not empty' };
+		if (username == null) return { isErr: true, errContnet: 'Username should not empty' };
 		if (password == null) return { isErr: true, errContnet: 'Password should not empty' };
 
-		// console.log(nim, password);
+		// console.log(username, password);
 
 		const response = await fetch('/api/auth', {
 			method: 'POST',
 			body: JSON.stringify({
-				nim,
+				username,
 				password
 			})
 		});
 
 		const jsonResponse = await response.json();
-
-		if (response.status != 200)
-			return { isLoggedIn: false, isErr: true, message: jsonResponse?.message.body.message };
+		if (jsonResponse.isErr)
+			return { isLoggedIn: false, isErr: true, message: jsonResponse?.errMessage };
 
 		cookies.set('token', jsonResponse.token, { path: '/', secure: true, maxAge: 86400 });
 		// return { isLoggedIn: true, isErr: false, message: null };
-		throw redirect(301, '/');
+		throw redirect(301, '/admin');
 	},
 
 	logout: async ({ cookies }) => {
