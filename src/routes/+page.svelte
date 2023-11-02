@@ -413,8 +413,8 @@
 															>
 														</div>
 													</div>
-													<p class="text-black text-opacity-70 text-justify mx-6">{jawaban}</p>
 												</div>
+												<p class="text-black text-opacity-70 text-justify mx-6">{jawaban}</p>
 											{/if}
 										</div>
 									</div>
