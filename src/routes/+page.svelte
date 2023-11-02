@@ -325,8 +325,8 @@
 															>{new Date(answered_at * 1000).toLocaleDateString()}</span
 														>
 													</div>
-													<p class="text-black text-opacity-70 text-justify mx-6">{jawaban}</p>
 												</div>
+												<p class="text-black text-opacity-70 text-justify mx-6">{jawaban}</p>
 											{/if}
 										</div>
 									</div>
