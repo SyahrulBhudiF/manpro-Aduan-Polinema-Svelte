@@ -99,7 +99,8 @@
 		isLaporanClicked = false;
 	});
 
-	if (form != null) {
+	$: if (form != null) {
+		//kubenarkan
 		setTimeout(() => {
 			form = null;
 		}, 5000);
