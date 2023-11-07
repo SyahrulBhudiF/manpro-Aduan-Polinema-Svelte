@@ -247,9 +247,15 @@
 				</div>
 
 				{#if isBerandaClicked}
-					<section class="input w-full h-fit flex justify-between">
-						<img src={ec1} alt="ec" />
-						<div class="flex flex-col text-center align-middle justify-center gap-3 w-[17%]">
+					<section class="input w-full h-[20%] flex justify-between align-middle">
+						<img
+							src={ec1}
+							alt="ec"
+							class="w-[10%] laptop1:w-[15%] laptop2:w-[18%] laptop3:w-[18%]"
+						/>
+						<div
+							class="flex flex-col text-center align-middle justify-center gap-3 w-[20%] p-4 laptop1:w-[25%] laptop2:w-[28%] laptop3:w-[28%]"
+						>
 							<p class="text-[1.75rem] font-semibold text-white">Ingin ajukan pelaporan?</p>
 							<p class="text-sm text-[#FFFFFF99]">
 								Pastikan Anda mengajukan pelaporan dengan fakta dan norma yang sesuai, ya.
@@ -266,7 +272,11 @@
 								>
 							</div>
 						</div>
-						<img src={ec2} alt="ec" />
+						<img
+							src={ec2}
+							alt="ec"
+							class="w-[10%] laptop1:w-[15%] laptop2:w-[18%] laptop3:w-[18%]"
+						/>
 					</section>
 
 					<section class="mainContent">
@@ -1171,7 +1181,6 @@
 	}
 
 	.input {
-		height: 13.0625rem;
 		flex-shrink: 0;
 		border-radius: 0.75rem;
 		background: #121212;

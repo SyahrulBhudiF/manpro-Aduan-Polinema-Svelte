@@ -16,6 +16,7 @@
 	import Card from '$lib/Components/cardAdmin.svelte';
 	import Report from '$lib/Components/adminReport.svelte';
 	import { page } from '$app/stores';
+	import { enhance } from '$app/forms';
 
 	export let data;
 	export let form;
@@ -27,6 +28,10 @@
 	let isModalOpen: boolean = false;
 	let selectedUserId: number | null = null;
 	let modalLaporan = false;
+	let openFilter: { target: any | null; show: boolean } = { target: null, show: false };
+	let checkboxes: boolean[] = [false, false, false, false];
+	let selectedOptionDate: string | null = null;
+	let selectedOptionRespon: string | null = null;
 
 	let open = false;
 
@@ -76,9 +81,44 @@
 		isModalOpen = false;
 	}
 
+	function handleFilter() {
+		openFilter = { show: true, target: null };
+	}
+
+	function closeFilter() {
+		openFilter = { show: false, target: null };
+	}
+
+	function handleClickOutside(event: any) {
+		const modal = document.getElementById('modalFilter');
+
+		if (modal && !modal.contains(event.target)) {
+			closeFilter();
+		}
+	}
+
+	const selectOnlyThis = (index: number) => {
+		checkboxes = checkboxes.map((value, i) => i === index);
+	};
+
+	const reset = () => {
+		checkboxes = checkboxes.map(() => false);
+		selectedOptionDate = null;
+		selectedOptionRespon = null;
+	};
+
 	onMount(() => {
 		isBerandaClicked = true;
 		isLaporanClicked = false;
+		const handleClickOutside = (event: MouseEvent) => {
+			if (!document.querySelector('.modal')?.contains(event.target as Node)) {
+				closeFilter();
+			}
+		};
+		window.addEventListener('click', handleClickOutside);
+		return () => {
+			window.removeEventListener('click', handleClickOutside);
+		};
 	});
 </script>
 
@@ -125,7 +165,7 @@
 					/>
 				</section>
 
-				<section class="mainContent">
+				<section class="mainContent relative">
 					<p class="text-[#121212] text-xl font-semibold">Laporan yang diajukan</p>
 					<div class="flex justify-between">
 						<ul class="flex gap-4">
@@ -140,9 +180,149 @@
 								</li>
 							{/each}
 						</ul>
-						<div class="navLi flex gap-1">
-							<img src={filter} alt="" />
-							<p>Filter</p>
+						<div class="flex flex-col w-max">
+							<button class="navLi flex gap-1 modal" on:click={handleFilter}>
+								<img src={filter} alt="" />
+								<p>Filter</p>
+							</button>
+							{#if openFilter.show === true}
+								<div class="card-modalFilter h-full w-full">
+									<div
+										class="modal cursor-default filter-shadow flex justify-center align-middle border border-[#EDEDED] w-[28%] h-fit bg-white p-4 rounded-lg mt-[7%] mr-[1.3%]"
+										on:click|stopPropagation
+										on:keydown
+										role="button"
+										tabindex="0"
+									>
+										<div class="flex flex-col w-full justify-center gap-6">
+											<div class="flex justify-between">
+												<h4 class="text-[#121212] text-xl font-semibold">Filter</h4>
+												<button
+													on:click={reset}
+													class="text-[#E14942] text-xs font-semibold cursor-pointer">Reset</button
+												>
+											</div>
+											<form class="flex flex-col gap-6">
+												<label for="tanggal" class="label-text">Urutan Tanggal</label>
+												<div class="flex gap-3">
+													<label class="label-category">
+														<input
+															type="radio"
+															name="tanggal"
+															id="tanggal"
+															class="radio-in"
+															value="Terbaru"
+															required
+															bind:group={selectedOptionDate}
+														/>
+														<span class="radio-text">Terbaru</span>
+													</label>
+													<label class="label-category">
+														<input
+															type="radio"
+															name="tanggal"
+															id="tanggal"
+															class="radio-in"
+															value="Terlama"
+															required
+															bind:group={selectedOptionDate}
+														/>
+														<span class="radio-text">Terlama</span>
+													</label>
+												</div>
+												<label for="urgent" class="label-text">Urgensi</label>
+												<div class="flex gap-3">
+													<label class="label-category">
+														<input
+															type="checkbox"
+															bind:checked={checkboxes[0]}
+															on:change={() => selectOnlyThis(0)}
+															class="checkbox"
+														/>
+														<span class="radio-text">Low</span>
+													</label>
+													<label class="label-category">
+														<input
+															type="checkbox"
+															bind:checked={checkboxes[1]}
+															on:change={() => selectOnlyThis(1)}
+															class="checkbox"
+														/>
+														<span class="radio-text">Medium</span>
+													</label>
+													<label class="label-category">
+														<input
+															type="checkbox"
+															bind:checked={checkboxes[2]}
+															on:change={() => selectOnlyThis(2)}
+															class="checkbox"
+														/>
+														<span class="radio-text">High</span>
+													</label>
+													<label class="label-category">
+														<input
+															type="checkbox"
+															bind:checked={checkboxes[3]}
+															on:change={() => selectOnlyThis(3)}
+															class="checkbox"
+														/>
+														<span class="radio-text">Urgent</span>
+													</label>
+												</div>
+												<label for="tanggal" class="label-text">Telah direspon</label>
+												<div class="flex gap-3">
+													<label class="label-category">
+														<input
+															type="radio"
+															name="respon"
+															id="tanggal"
+															class="radio-in"
+															value="Semua"
+															required
+															bind:group={selectedOptionRespon}
+														/>
+														<span class="radio-text">Semua</span>
+													</label>
+													<label class="label-category">
+														<input
+															type="radio"
+															name="respon"
+															id="tanggal"
+															class="radio-in"
+															value="Direspon"
+															required
+															bind:group={selectedOptionRespon}
+														/>
+														<span class="radio-text">Telah Direspon</span>
+													</label>
+													<label class="label-category">
+														<input
+															type="radio"
+															name="respon"
+															id="tanggal"
+															class="radio-in"
+															value="!Respon"
+															required
+															bind:group={selectedOptionRespon}
+														/>
+														<span class="radio-text">Belum Direspon</span>
+													</label>
+												</div>
+											</form>
+											<div class="flex justify-end">
+												<div
+													class="w-fit py-2 px-6 bg-[#048F7B] rounded-md hover:bg-opacity-90 transition-colors duration-300"
+												>
+													<button
+														on:click={closeFilter}
+														class="text-white text-sm font-semibold text-center">Terapkan</button
+													>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							{/if}
 						</div>
 					</div>
 
@@ -276,18 +456,6 @@
 		transition: 0.3s ease-in-out;
 	}
 
-	.button.selected {
-		background-color: #048f7b;
-		color: white;
-	}
-
-	.input {
-		height: 13.0625rem;
-		flex-shrink: 0;
-		border-radius: 0.75rem;
-		background: #121212;
-	}
-
 	.mainContent {
 		display: flex;
 		flex-direction: column;
@@ -320,5 +488,54 @@
 		justify-content: center;
 		z-index: 50;
 		background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	.card-modalFilter {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		justify-content: flex-end;
+		z-index: 50;
+	}
+
+	.filter-shadow {
+		box-shadow: 0px 14px 38px 0px rgba(18, 18, 18, 0.15);
+	}
+	.label-category {
+		@apply cursor-pointer flex items-center gap-2 p-4 w-fit border rounded-lg border-solid border-[#EDEDED];
+	}
+	.label-category:has(input:checked) {
+		@apply border-2 border-[#048F7B] text-[#048F7B];
+	}
+	.label-category:has(input:checked) > .radio-in {
+		@apply relative h-4 w-4 cursor-pointer appearance-none
+		 rounded-full border border-blue-200 text-green-500 transition-all before:absolute before:top-2/4 before:left-2/4
+		  before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-500
+		   before:opacity-0 before:transition-opacity checked:border-green-500 checked:before:bg-green-500 hover:before:opacity-10
+		   after:text-green-400;
+	}
+
+	.label-text {
+		@apply text-[#121212] text-sm font-semibold -mb-[1rem];
+	}
+
+	.label-category:has(input:checked) > .radio-text {
+		@apply text-[#048F7B];
+	}
+
+	.radio-in {
+		@apply w-fit h-[1.125rem] text-blue-600 bg-sky-100 border-sky-300 cursor-pointer focus:ring-blue-500;
+	}
+
+	.radio-text {
+		@apply text-[rgba(18,18,18,0.60)] text-sm not-italic font-medium leading-[140%] font-JKTSans;
+	}
+
+	.checkbox {
+		@apply cursor-pointer;
+	}
+
+	.selection-zone {
+		@apply font-semibold text-lg appearance-none bg-[url('../lib/Assets/arrow.svg')] bg-no-repeat bg-[right_0.7rem_top_50%] bg-[2rem_auto];
 	}
 </style>
