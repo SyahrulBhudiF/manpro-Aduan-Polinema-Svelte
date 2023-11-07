@@ -16,7 +16,6 @@
 	import Card from '$lib/Components/cardAdmin.svelte';
 	import Report from '$lib/Components/adminReport.svelte';
 	import { page } from '$app/stores';
-	import { enhance } from '$app/forms';
 
 	export let data;
 	export let form;
@@ -29,9 +28,15 @@
 	let selectedUserId: number | null = null;
 	let modalLaporan = false;
 	let openFilter: { target: any | null; show: boolean } = { target: null, show: false };
-	let checkboxes: boolean[] = [false, false, false, false];
-	let selectedOptionDate: string | null = null;
-	let selectedOptionRespon: string | null = null;
+	let checkboxes: { low: boolean; intermediate: boolean; high: boolean; urgent: boolean } = {
+		low: false,
+		intermediate: false,
+		high: false,
+		urgent: false
+	};
+	let selectedOptionDate: boolean = true;
+	let selectedOptionRespon: string = 'Semua';
+	let content = data.content;
 
 	let open = false;
 
@@ -97,14 +102,77 @@
 		}
 	}
 
-	const selectOnlyThis = (index: number) => {
-		checkboxes = checkboxes.map((value, i) => i === index);
+	function filterTrigger() {
+		const urgentState = urgentStateFilter();
+		responseFilter(urgentState);
+		shorter();
+
+		console.log(content);
+	}
+
+	const responseFilter = (urgentState: boolean) => {
+		let filterType: number | null = null;
+
+		if (selectedOptionRespon == 'Semua') filterType = null;
+		if (selectedOptionRespon == '!Respon') filterType = 0;
+		if (selectedOptionRespon == 'Direspon') filterType = 1;
+
+		if (filterType == null) {
+			if (urgentState) content = content;
+			if (!urgentState) content = data.content;
+			shorter();
+			return;
+		}
+
+		if (urgentState)
+			content = content.filter((value: any) => (value.status == filterType ? value : false));
+		if (!urgentState)
+			content = data.content.filter((value: any) => (value.status == filterType ? value : false));
 	};
 
+	const urgentStateFilter = () => {
+		let filteredContent: any[] = [];
+		let filterType: number[] = [];
+
+		if (checkboxes.low) filterType.push(1);
+		if (checkboxes.intermediate) filterType.push(2);
+		if (checkboxes.high) filterType.push(3);
+		if (checkboxes.urgent) filterType.push(4);
+
+		if (filteredContent.length == 0) return false;
+
+		data.content.map((value: any) => console.log(filterType.includes(value.urgensi)));
+
+		data.content.map((value: any) =>
+			filterType.includes(value.urgensi) ? filteredContent.push(value) : false
+		);
+
+		content = filteredContent;
+
+		return true;
+	};
+
+	const shorter = () => {
+		let sorted = content.sort((a: any, b: any) =>
+			selectedOptionDate ? a.created_at - b.created_at : b.created_at - a.created_at
+		);
+
+		content = sorted;
+	};
+
+	// const selectOnlyThis = (index: number) => {
+	// 	checkboxes = checkboxes.map((value, i) => i === index);
+	// };
+
 	const reset = () => {
-		checkboxes = checkboxes.map(() => false);
-		selectedOptionDate = null;
-		selectedOptionRespon = null;
+		checkboxes = {
+			low: false,
+			intermediate: false,
+			high: false,
+			urgent: false
+		};
+		selectedOptionDate = true;
+		selectedOptionRespon = 'Semua';
 	};
 
 	onMount(() => {
@@ -211,7 +279,7 @@
 															name="tanggal"
 															id="tanggal"
 															class="radio-in"
-															value="Terbaru"
+															value={true}
 															required
 															bind:group={selectedOptionDate}
 														/>
@@ -223,7 +291,7 @@
 															name="tanggal"
 															id="tanggal"
 															class="radio-in"
-															value="Terlama"
+															value={false}
 															required
 															bind:group={selectedOptionDate}
 														/>
@@ -233,38 +301,52 @@
 												<label for="urgent" class="label-text">Urgensi</label>
 												<div class="flex gap-3">
 													<label class="label-category">
+														<!-- bind:checked={checkboxes.low} -->
 														<input
 															type="checkbox"
-															bind:checked={checkboxes[0]}
-															on:change={() => selectOnlyThis(0)}
+															on:change={() =>
+																checkboxes.low ? (checkboxes.low = false) : (checkboxes.low = true)}
 															class="checkbox"
+															checked={checkboxes.low}
 														/>
 														<span class="radio-text">Low</span>
 													</label>
 													<label class="label-category">
+														<!-- bind:checked={checkboxes.intermediate} -->
 														<input
 															type="checkbox"
-															bind:checked={checkboxes[1]}
-															on:change={() => selectOnlyThis(1)}
+															on:change={() =>
+																checkboxes.intermediate
+																	? (checkboxes.intermediate = false)
+																	: (checkboxes.intermediate = true)}
 															class="checkbox"
+															checked={checkboxes.intermediate}
 														/>
 														<span class="radio-text">Medium</span>
 													</label>
 													<label class="label-category">
+														<!-- bind:checked={checkboxes.high} -->
 														<input
 															type="checkbox"
-															bind:checked={checkboxes[2]}
-															on:change={() => selectOnlyThis(2)}
+															on:change={() =>
+																checkboxes.high
+																	? (checkboxes.high = false)
+																	: (checkboxes.high = true)}
 															class="checkbox"
+															checked={checkboxes.high}
 														/>
 														<span class="radio-text">High</span>
 													</label>
 													<label class="label-category">
+														<!-- bind:checked={checkboxes.urgent} -->
 														<input
 															type="checkbox"
-															bind:checked={checkboxes[3]}
-															on:change={() => selectOnlyThis(3)}
+															on:change={() =>
+																checkboxes.urgent
+																	? (checkboxes.urgent = false)
+																	: (checkboxes.urgent = true)}
 															class="checkbox"
+															checked={checkboxes.urgent}
 														/>
 														<span class="radio-text">Urgent</span>
 													</label>
@@ -280,6 +362,7 @@
 															value="Semua"
 															required
 															bind:group={selectedOptionRespon}
+															checked
 														/>
 														<span class="radio-text">Semua</span>
 													</label>
@@ -313,9 +396,11 @@
 												<div
 													class="w-fit py-2 px-6 bg-[#048F7B] rounded-md hover:bg-opacity-90 transition-colors duration-300"
 												>
+													<!-- on:click={closeFilter} -->
 													<button
-														on:click={closeFilter}
-														class="text-white text-sm font-semibold text-center">Terapkan</button
+														type="submit"
+														class="text-white text-sm font-semibold text-center"
+														on:click={() => filterTrigger()}>Terapkan</button
 													>
 												</div>
 											</div>
@@ -327,19 +412,33 @@
 					</div>
 
 					<div class="grid grid-cols-3 gap-4">
-						{#each data.content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin }, index}
+						{#each content as { id_laporan, nama, pesan, jawaban, urgensi, kategori, status, created_at, answered_at, namaAdmin }, index}
 							{#if kategori === laporanItems[activeIndex].name}
-								<Card
-									id={id_laporan}
-									profile={questionPict}
-									name={nama}
-									date={new Date(created_at * 1000).toLocaleDateString()}
-									category={kategori}
-									text={pesan}
-									urgentState={Number.parseInt(urgensi)}
-									{openModal}
-									{jawaban}
-								/>
+								{#if selectedOptionRespon == 'Semua'}
+									<Card
+										id={id_laporan}
+										profile={questionPict}
+										name={nama}
+										date={new Date(created_at * 1000).toLocaleDateString()}
+										category={kategori}
+										text={pesan}
+										urgentState={Number.parseInt(urgensi)}
+										{openModal}
+										{jawaban}
+									/>
+								{:else}
+									<Card
+										id={id_laporan}
+										profile={questionPict}
+										name={nama}
+										date={new Date(created_at * 1000).toLocaleDateString()}
+										category={kategori}
+										text={pesan}
+										urgentState={Number.parseInt(urgensi)}
+										{openModal}
+										{jawaban}
+									/>
+								{/if}
 							{:else if activeIndex === 0}
 								<Card
 									id={id_laporan}
